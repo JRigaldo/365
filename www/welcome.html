@@ -5,21 +5,37 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-    <link rel="stylesheet" type="text/css" href="app/index.css">
     <link href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400" rel="stylesheet">
     <title>Application 365</title>
-    <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="app/index.js"></script>
+    <!-- <script type="text/javascript" src="cordova.js"></script> -->
+    
+    <script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="../node_modules/jquery-ui-dist/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+    <!-- <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css"> -->
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/menu.css">
-    <link rel="stylesheet" href="css/bubble.css">
+    <link rel="stylesheet" href="css/app.css">
   </head>
   <body>
     <header>
-      <div class="admin"><p>Passer en mode <a href="#">"inscrit"</a></p><!--p>Passer en mode <a href="#">"non inscrit"</a></p--></div>
+<!--       <a href="#" class="back">
+        <svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+   viewBox="0 0 64 64" style="enable-background:new 0 0 64 64;" xml:space="preserve">
+        <path class="st0" d="M62.7,34.9c-0.8-3.2-1.8-5.7-3.3-7.8c-4.8-7.1-11.4-10.6-20-10.7c-2.4,0-17.1,0-19.9,0l-1,0l-0.5-1
+          c-0.3-0.6-0.1-1.3,0.4-1.8l0.2-0.2c1.7-1.6,6.7-6.5,8.6-8.3c-0.8-0.8-1.5-1.4-2.1-2c-1-0.9-1.9-1.7-3-2.9c-0.1,0.1-0.3,0.2-0.5,0.4
+          C18.2,3.8,4.6,17.2,0.7,20.9c3.4,3.7,15.1,16.2,20.5,21.7l1.9-2c1.2-1.2,2.3-2.3,3.6-3.6c-2.1-2.2-7.5-8.1-8.7-9.3L17.4,27l0.8-1.9
+          l1.1-0.1c2.2,0,17.4,0,19.7,0c3.4,0,6.6,0.9,9.3,2.9c3.2,2.3,5.3,5.5,6,9.3c0.6,3.3,0.3,6.3-1,8.9c-1.4,3-3.4,5.3-6.2,6.9
+          c-1.7,1-3.6,1.7-6,2c0,2.6,0,5.2,0,7.7l0,1.1c2.4-0.2,4.8-0.9,6-1.3c1.6-0.6,3.7-1.5,5.6-2.7c3.7-2.4,6.4-5.5,8.1-9.3
+          c0.9-2,1.8-4.3,2.1-6.5C63.5,40.7,63.4,37.7,62.7,34.9z"/>
+        </svg>
+      </a> -->
+
+      <h1>Créer un compte</h1>
   
       <a href="#" class="settings">
           <svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -123,14 +139,30 @@
       </nav>
     </header>
     <main>
-      <article><p>Bravo ! Continuez comme ça, votre progression est stable.</p><span></span></article>
-      <article><p>Votre nombre d'étoiles acquises est de 524.</p><span></span></article>
+      <div class="particulemeter"><span></span></div>
+        
+            <div class="particules">
+                <span data-posleft="-5" data-postop="-5"></span>
+                <span data-posleft="5" data-postop="-5"></span>
+                <span data-posleft="-5" data-postop="5"></span>
+                <span data-posleft="1" data-postop="8"></span>
+                <span data-posleft="-12" data-postop="-7"></span>
+                <span data-posleft="0" data-postop="-1"></span>
+                <span data-posleft="14" data-postop="-6"></span>
+                <span data-posleft="-1" data-postop="-11"></span>
+                <span data-posleft="6" data-postop="-11"></span>
+                <span data-posleft="14" data-postop="2"></span>
+                <span data-posleft="-10" data-postop="12"></span>
+                <span data-posleft="-12" data-postop="2"></span>
+                <span data-posleft="8" data-postop="10"></span>
+                <span data-posleft="7" data-postop="1"></span>
+            </div>
     </main>
-    <footer>
+    <footer class="footer-buttons">
       <nav>
-        <li><a href="#"><button>Découvrir</button></a></li>
-        <li><a href="#"><button>Essayer</button></a></li>
-        <li><a href="#"><button>Créer un profil</button></a></li>
+        <li><a href="explore.html"><button>Découvrir</button></a></li>
+        <li><a href="#" id="animation-button"><button>Essayer</button></a></li>
+        <li><a href="profile.html"><button>Créer un profil</button></a></li>
       </nav>
     </footer>
   </body>

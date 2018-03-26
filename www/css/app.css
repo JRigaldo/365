@@ -1,0 +1,88 @@
+main {
+	width: 100%; 
+	height:100vh
+}
+
+div.particules{ 
+	width: 10px; 
+	height: 10px; 
+	position: absolute; 
+	top: 0px; 
+	right: 0px; 
+	bottom: 0px; 
+	left: 0px; 
+	margin: auto;
+}
+
+div.particules > span { 
+	display: block; 
+	background: rgba(0, 0, 0, 0.5); 
+	position: absolute; 
+	left: -10px; 
+	top: -10px; 
+	border-radius: 50%;
+}
+            
+div.particulemeter {
+	width: 400px; 
+	height: 1px; 
+	background: rgba(0, 0, 0, 0.5); 
+	position: relative; 
+	margin: 30px auto;
+}
+
+div.particulemeter > span {
+	display: block; 
+	width: 5px; 
+	height: 11px; 
+	position: absolute; 
+	left: 0px; 
+	top: -5px; 
+	background: rgba(0, 0, 0, 0.9); 
+}
+
+main svg {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	width: 100px;
+	display: block;
+}
+
+section {
+	position: relative;
+}
+
+.results-stars{
+	height: 300px;
+}
+
+section h2, section p{
+	color: #FFFFFF;
+	text-align: center;
+}
+
+section a {
+	font-size: 0.9em;
+	font-weight: 300;
+	width: 100%;
+	color: #00C2FF;
+	border: none;
+	background: none;
+	text-decoration: none;
+}
+
+section a button{
+	display: block;
+	height: 30px;
+  	width: 50%;
+  	max-width: 330px;
+  	margin: 17px auto;
+  	background: #FFFFFF;
+  	text-decoration: none;
+  	text-align: center;
+  	padding: 2px 8px;
+  	border-radius: 10px;
+  	box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+}

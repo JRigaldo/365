@@ -1,0 +1,99 @@
+header nav {
+  display: none;
+  position: absolute;
+  background-color: green;
+  width: 200px;
+  right: 10px;
+  top: 55px;
+  border-radius: 5px 0 5px 5px;
+}
+
+
+header nav ul{
+  padding: 10px;
+}
+
+header nav ul li {
+  position: relative;
+  list-style: none;
+  display: inline-block;
+  width: 100%;
+  color: #FFFFFF;
+}
+
+header nav ul li span {
+  display: inline-block;
+  height: 48px;
+  line-height: 48px;
+}
+
+header nav ul li::after{
+  display: table;
+  zoom: 1;
+  clear: both;
+}
+
+header nav ul li button {
+  position: relative;
+  display: block;
+  float: right;
+  top: 6px;
+  right: 0;
+  width: 70px;
+  height: 35px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16) inset;
+  border-width: 3px;
+  border-style: solid;
+  border-radius: 10px;
+}
+
+header li button.on span, header li button.off span {
+  position: relative;
+  display: block;
+  height: 27px;
+  width: 100%;
+}
+
+header li button.on span {
+  float: left;
+  left: -6px;
+  width: 35px;
+  background-color: #60FF85;
+  border-radius: 7px 0 0 7px;
+}
+
+header li button.off span {
+  float: right;
+  right: -6px;
+  width: 35px;
+  background: #FF5353;
+  border-radius: 0 10px 10px 0;
+}
+
+.design-angle{
+  position: absolute;
+  right: 47px;
+  top: -30px;
+  width: 40px;
+  height: 30px;
+  background: green;
+}
+
+.design-angle span{
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.design-angle span span{
+  position: absolute;
+  z-index: 100;
+  display: block;
+  width: 40px;
+  height: 30px;
+  background-color: #00C2FF;
+  -webkit-border-bottom-right-radius: 150px;
+  -moz-border-radius-bottomright: 150px;
+  border-bottom-right-radius: 150px;
+}
