@@ -128,11 +128,11 @@ div.code {
     font-size: 6px;
 }
 
-.results {
+.results main {
     height: calc(100% - 220px);
 }
 
-.results {
+.results section {
     padding: 0;
 }
 
@@ -145,21 +145,21 @@ div.code {
     transform: translateX(-50%) translateY(-50%);
 }
 
-.results h2 {
+.results main h2 {
     font-size: 1.5em;
 }
 
-.results p {
+.results main p {
     font-size: 0.9em;
     padding: 0 20px;
 }
 
-.results aside {
+.results section aside {
     position: relative;
     height: 50px;
 }
 
-.results article button{
+.results main article button{
     width: calc(100% - 25px);
 }
 
@@ -184,12 +184,12 @@ div.code {
     width: 80px;
 }
 
-.statistic {
+.statistic main {
     padding: 0 20px;
     top: 75px;
 }
 
-.statistic {
+.statistic section {
     padding: 0;
     top: 0;
     height: auto;
@@ -241,7 +241,7 @@ div.code {
     width: 100%;
 }
 
-.statistic {
+.statistic main section {
     position: relative;
     display: block;
     width: 100%;
@@ -251,7 +251,7 @@ div.code {
 }
 
 
-.statistic {
+.statistic main section {
     border-top: 1px solid #FFFFFF;
     border-bottom: 1px solid #FFFFFF;
 }
@@ -362,16 +362,16 @@ div.code {
     width: 20px;
 }
 
-/*.feedback{
+/*.feedback main{
     height: calc(100% - 140px);
 }*/
 
-.feedback aside {
+.feedback main section aside {
     position: relative;
     height: 200px;
 }
 
-.feedback aside svg{
+.feedback main section aside svg{
     position: absolute;
     width: 45%;
     max-width: 300px;
@@ -384,12 +384,12 @@ div.code {
     padding-top: 50px;
 }
 
-.feedback .evaluation-star{
+.feedback main section .evaluation-star{
     text-align: center;
     margin-top: 50px;
 }
 
-.feedback .evaluation-star svg {
+.feedback main section .evaluation-star svg {
     display: inline-block;
     width: 50%;
     max-width: 200px;
@@ -402,7 +402,7 @@ div.code {
     height: 150px;
 }
 
-.feedback aside div{
+.feedback main section aside div{
     position: absolute;
     width: 50%;
     max-width: 200px;
@@ -411,7 +411,7 @@ div.code {
     transform: translateX(-50%) translateY(-50%);
 }
 
-.feedback aside ul{
+.feedback main section aside ul{
     position: relative;
     margin: 0;
     height: 2px;
@@ -419,7 +419,7 @@ div.code {
     background-color: #FFFFFF;
 }
 
-.feedback li{
+.feedback main section li{
     position: absolute;
     left: 0;
     display: block;
@@ -430,21 +430,21 @@ div.code {
     transform: translateY(-50%);
 }
 
-.feedback li.active{
+.feedback main section li.active{
     width: 12px;
     height: 35px;
     border-radius: 3px;
 }
 
-.feedback li:nth-child(2){
+.feedback main section li:nth-child(2){
     left: 33.33%;
 }
 
-.feedback li:nth-child(3){
+.feedback main section li:nth-child(3){
     left: 66.66%;
 }
 
-.feedback li:nth-child(4){
+.feedback main section li:nth-child(4){
     left: 100%;
 }
 
@@ -460,7 +460,7 @@ div.code {
     fill: #FFFFFF;
 }
 
-.help svg {
+.help main svg {
     position: relative;
     display: block;
     width: 50px;
@@ -483,11 +483,11 @@ span.line {
     min-height: 40px;
 }
 
-.share {
+.share main {
     height: calc(100% - 270px);
 }
 
-.share{
+.share main section{
     height: auto;
 }
 

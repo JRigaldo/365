@@ -86,8 +86,7 @@ img{
 iframe{
   display: block;
   width: 100%;
-  height: calc(100vh - 40vh);
-  border-radius: 10px;
+  height: 100%;
 }
 
 button:focus{
@@ -157,12 +156,11 @@ main ul li svg {
     height: 20px;
 }
 
-/*
 main svg {
     display: inline;
     width: 60px;
+/*    margin: 10px;*/
 }
-*/
 
 section h2,
 section p {

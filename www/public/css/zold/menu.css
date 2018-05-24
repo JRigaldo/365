@@ -1,0 +1,201 @@
+/*header {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 70px;
+}*/
+
+header nav ul li.adminMenu{
+  display: none;
+}
+
+header{
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+}
+
+header nav{
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+}
+
+header nav.menu{
+  display: none;
+  background-color: #FFFFFF;
+  width: 60%;
+  max-width: 310px;
+  min-width: 200px;
+  float: right;
+  top: -13px;
+  right: 10px;
+  border-radius: 10px 0 10px 10px;
+}
+
+header nav.menu.open, header nav.timeline.open{
+  display: block;
+  position: absolute;
+  top: 56px;
+  z-index: 10;
+}
+
+header nav.timeline {
+  display: none;
+  position: absolute;
+  top: 58px;
+  z-index: 10;
+  background-color: #FFFFFF;
+  width: 60%;
+  max-width: 310px;
+  min-width: 200px;
+  float: right;
+  top: -13px;
+  right: 60px;
+  border-radius: 10px 0 10px 10px;
+}
+
+/*header nav.timelineOpen{
+  display: block;
+}
+*/
+/*header .settings {
+  border-radius: 10px 10px 0 0;
+  background-color: #00C2FF;
+  padding: 10px 15px 10px 15px;
+}*/
+
+header #settings svg {
+  fill: #FFFFFF;
+}
+
+header #settings.open, header #calendar.open {
+  background-color: #FFFFFF;
+  border-radius: 10px 10px 0 0;
+}
+
+header #settings.open svg, header #calendar.open svg{
+  fill: #00C2FF;
+}
+
+header nav ul{
+  padding: 10px;
+  margin: 0;
+}
+
+header nav ul li {
+  position: relative;
+  list-style: none;
+  display: inline-block;
+  width: 100%;
+  color: #00C2FF;
+}
+
+header nav ul li span {
+  display: inline-block;
+  height: 48px;
+  line-height: 48px;
+}
+
+header nav ul li::after{
+  display: table;
+  zoom: 1;
+  clear: both;
+}
+
+header nav ul li button {
+  position: relative;
+  display: block;
+  float: right;
+  top: 6px;
+  right: 0;
+  width: 70px;
+  height: 35px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  border-width: 3px;
+  border-style: solid;
+  border-radius: 10px;
+  background-color: #00C2FF;
+  border-color: #00C2FF;
+}
+
+header nav ul li a {
+  display: block;
+  background-color: #00C2FF;
+  color: #FFFFFF;
+  text-decoration: none;
+  width: 100%;
+  padding: 4px 0;
+  margin: 8px auto;
+  text-align: center;
+  box-shadow: 0px 3px 6px rgba(0,0,0, 0.16);
+  border-radius: 10px;
+  font-weight: 300;
+  font-size: 0.9em;
+}
+
+header li button.on span, header li button.off span {
+  position: relative;
+  display: block;
+  height: 27px;
+  width: 100%;
+}
+
+header li button.on span {
+  float: left;
+  left: -6px;
+  width: 35px;
+  background-color: #60FF85;
+  border-radius: 7px 0 0 7px;
+}
+
+header li button.off span {
+  float: right;
+  right: -6px;
+  width: 35px;
+  background: #FF5353;
+  border-radius: 0 10px 10px 0;
+}
+
+.menu-color{
+  margin: 20px 0;
+}
+
+.menu-color .btn {
+  display: inline-block;
+  width: calc(89% / 5);
+  height: 17px;
+}
+
+.menu-color span.actif a{
+  outline: 5px solid white;
+  box-shadow: 0px 3px 5px 6px rgba(0,0,0, 0.16);
+  z-index: 1; position: relative;
+}
+
+.menu-color span:first-child{
+  background-color: #FF5353;
+
+}
+
+.menu-color span:nth-child(2){
+  background-color: #F17FF1;
+}
+
+.menu-color span:nth-child(3){
+  background-color: #00C2FF;
+
+}
+
+.menu-color span:nth-child(4){
+  background-color: #60F583;
+
+}
+
+.menu-color span:last-child{
+  background-color: #FFDD00;
+
+}
