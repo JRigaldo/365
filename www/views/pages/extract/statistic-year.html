@@ -1,0 +1,12 @@
+<main>
+
+  <script type="text/javascript">
+      console.log('load statisticYear')
+      $.get('views/pages/statistic-year.ejs', function(statisticYear) {
+        html = ejs.render(statisticYear, {});
+        $('#statisticYear').html(html);
+      });
+
+  </script>
+  <div id="statisticYear"></div>
+</main>

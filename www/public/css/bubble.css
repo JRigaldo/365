@@ -1,0 +1,60 @@
+.admin section{
+  position: absolute;
+  top: 0;
+  right: 0;
+  overflow-y: scroll;
+}
+
+section article.bubble {
+  position: relative;
+  z-index: 3;
+  background-color: #FFFFFF;
+  display: block;
+  width: 100%;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  border-radius: 10px;
+  border: none;
+  font-size: 1em;
+  font-weight: 300;
+  color: #00C2FF;
+  max-width: 330px;
+  margin: 0 auto;
+}
+
+.admin section p{
+  color: #00C2FF;
+  text-align: left;
+}
+
+.admin {
+  z-index: 1;
+}
+
+section article p.bubble{
+  padding: 10px 50px 10px 15px;
+  margin: 15px 0;
+}
+
+section article p.close{
+  padding: 10px 30px 15px 10px;
+  margin: 15px 0;
+}
+
+section article span.cross{
+  position: absolute;
+  top: 10px;
+  right: 5px;
+  width: 28px;
+  height: 28px;
+}
+
+section article span.cross svg{
+  fill: #00C2FF;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+}
+
+section article.bubble.remove-bubble {
+    display: none;
+}

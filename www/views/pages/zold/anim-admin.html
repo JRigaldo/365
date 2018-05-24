@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <link href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400" rel="stylesheet">
+    <title>Application 365</title>
+    <!-- <script type="text/javascript" src="cordova.js"></script> -->
+    <script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="../node_modules/jquery-ui-dist/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+    <!-- <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css"> -->
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/app.css">
+    <script>
+        var particulesSize = 4;
+        var easeInspiration = 'easeInOutCubic';
+        var dureeInspiration = 5500;
+        var easeExpiration = 'easeInOutQuart';
+        var dureeExpiration = 4500;
+        var dureeAttente = 1500;
+        var dureeTotalExercice = 5; // minutes 
+        var duree = 0;
+        var countdown = 3;
+
+
+        $(window).on('load', function() {
+            //generateParticules();
+            animateParticules();
+        });
+
+        $(window).on('resize', function() {
+            animateParticules();
+        });
+
+
+        var animdist = 0;
+
+        var particuleIsSet = false;
+
+        var particules = null;
+
+        var particulesPosition = [];
+        /*
+        var generateParticules = function()
+        {
+            for( var i = -100; i <= 100; i += 3)
+            {
+                for( var j = -100; j <= 100; j += 3)
+                {
+                    $('div.particules').append('<span data-posleft="'+i+'" data-postop="'+j+'"></span>');
+                    
+                    $('div.code').append('&lt;span data-posleft="'+i+'" data-postop="'+j+'"&gt;&lt;/span&gt;<br>');
+                }
+            }
+        }
+        */
+
+
+
+        var animcycle = function() {
+            var r = Math.floor((Math.random() * 3));
+            var n1 = 0;
+            var n2 = 0;
+            var n3 = 0;
+
+            $.each(particulesPosition, function(k, v) {
+                var o = particulesPosition[k].obj;
+                o.stop(true, true);
+
+                n1++;
+                if (particulesPosition[k].animate === r) {
+                    var l = particulesPosition[k].posLeft;
+                    var t = particulesPosition[k].posTop;
+                    var a = particulesPosition[k].animdist;
+
+                    if (n1 === 1) {
+                        $('div.particulemeter > span').stop().css({ left: 0 });
+                        $('div.particulemeter > span').animate({ left: 200 }, dureeInspiration, easeInspiration);
+                    }
+                    o.animate({ left: (l * animdist * a), top: (t * animdist * a) }, dureeInspiration, easeInspiration, function() {
+                        n2++;
+                        if (n2 === 1) {
+                            $('div.particulemeter > span').stop();
+                            $('div.particulemeter > span').animate({ left: 0 }, dureeExpiration, easeExpiration);
+                        }
+                        o.animate({ left: (l), top: (t) }, dureeExpiration, easeExpiration, function() {
+                            n3++;
+                            if (n3 === 1) {
+                                $('div.particulemeter > span').stop().animate({ opacity: 0 }, (dureeAttente / 2), function() {
+                                    $('div.particulemeter > span').animate({ opacity: 1 }, (dureeAttente / 2));
+                                });
+                                setTimeout(function() { animcycle() }, dureeAttente);
+                            }
+                        });
+                    });
+                }
+            });
+        }
+
+
+
+        var doExercice = function() {
+            $('div.duree > span').animate({ width: (100 * (duree / dureeTotalExercice)) + '%' });
+
+            duree += 0.1;
+
+            if (duree < dureeTotalExercice) {
+                setTimeout(function() { doExercice(); }, 10);
+            } else {
+                $('div.particules > span').fadeOut();
+                $('div.particulemeter').fadeOut();
+            }
+
+            
+        }
+
+
+
+        var doCountdown = function() {
+            if (countdown >= 1) {
+                $('div.countdown > span').animate({ opacity: 1 }, 100).html(countdown);
+            }
+            countdown--;
+
+            if (countdown >= 0) {
+                setTimeout(function() {
+
+                    if (countdown >= 1) {
+                        $('div.countdown > span').animate({ opacity: 0.3 }, 100, function() { doCountdown(); });
+                    } else {
+                        $('div.countdown > span').animate({ opacity: 0 }, 100, function() { doCountdown(); });
+                    }
+                }, 1000);
+            } else {
+                $('div.countdown').fadeOut();
+                //doExercice();
+                animcycle();
+            }
+        }
+
+
+        var animateParticules = function() {
+            var wWidth = $(window).width();
+            var wHeight = $(window).height();
+
+            animdist = (wWidth < wHeight) ? wWidth / 200 : wHeight / 200;
+
+            if (!particuleIsSet) {
+                particules = $('div.particules > span');
+
+                particules.css({ width: particulesSize, height: particulesSize });
+            }
+
+
+            $.each(particules, function(k, v) {
+                if (!particuleIsSet) {
+                    var random = Math.floor((Math.random() * 4));
+                    var random2 = Math.floor((Math.random() * 3));
+                    var posLeft = parseInt($(this).data('posleft'));
+                    var posTop = parseInt($(this).data('postop'));
+
+                    if (posLeft < 0) { posLeft -= random; } else if (posLeft > 0) { posLeft -= random; }
+
+                    if (posTop < 0) { posTop -= random; } else if (posTop > 0) { posTop -= random; }
+
+                    var animdist = (k % random === 0 && 100 < (Math.abs(posTop) + Math.abs(posLeft))) ? 1.0 : 0.7;
+
+                    particulesPosition[k] = { obj: $(this), posLeft: posLeft, posTop: posTop, animdist: animdist, animate: random2 };
+                }
+
+                $(this).css({ left: particulesPosition[k].posLeft, top: particulesPosition[k].posTop });
+            });
+
+            particuleIsSet = true;
+
+            doCountdown();
+
+            //animcycle();
+        }
+    </script>
+    <style type="text/css" media="screen">
+        /*    #back {
+            display: none;
+        }*/
+
+        #back.start {
+            display: block;
+        }
+
+        #animation {
+            display: none;
+        }
+
+        section#animation.start {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="top-bar">
+            <a href="admin.html" class="back" id="back">
+                <svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64;" xml:space="preserve">
+                    <path class="st0" d="M62.7,34.9c-0.8-3.2-1.8-5.7-3.3-7.8c-4.8-7.1-11.4-10.6-20-10.7c-2.4,0-17.1,0-19.9,0l-1,0l-0.5-1
+              c-0.3-0.6-0.1-1.3,0.4-1.8l0.2-0.2c1.7-1.6,6.7-6.5,8.6-8.3c-0.8-0.8-1.5-1.4-2.1-2c-1-0.9-1.9-1.7-3-2.9c-0.1,0.1-0.3,0.2-0.5,0.4
+              C18.2,3.8,4.6,17.2,0.7,20.9c3.4,3.7,15.1,16.2,20.5,21.7l1.9-2c1.2-1.2,2.3-2.3,3.6-3.6c-2.1-2.2-7.5-8.1-8.7-9.3L17.4,27l0.8-1.9
+              l1.1-0.1c2.2,0,17.4,0,19.7,0c3.4,0,6.6,0.9,9.3,2.9c3.2,2.3,5.3,5.5,6,9.3c0.6,3.3,0.3,6.3-1,8.9c-1.4,3-3.4,5.3-6.2,6.9
+              c-1.7,1-3.6,1.7-6,2c0,2.6,0,5.2,0,7.7l0,1.1c2.4-0.2,4.8-0.9,6-1.3c1.6-0.6,3.7-1.5,5.6-2.7c3.7-2.4,6.4-5.5,8.1-9.3
+              c0.9-2,1.8-4.3,2.1-6.5C63.5,40.7,63.4,37.7,62.7,34.9z" />
+                </svg>
+            </a>
+            <div class="duree"><span></span></div>
+            <div class="countdown"><span></span></div>
+            <!-- <div class="particulemeter"><span></span></div> -->
+            <a href="#" class="settings" id="settings">
+                <svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64;" xml:space="preserve">
+                    <path d="M-12.5,1.6c-0.8-3.2-1.8-5.7-3.3-7.8c-4.8-7.1-11.4-10.6-20-10.7c-2.4,0-17.1,0-19.9,0l-1,0l-0.5-1
+                c-0.3-0.6-0.1-1.3,0.4-1.8l0.2-0.2c1.7-1.6,6.7-6.5,8.6-8.3c-0.8-0.8-1.5-1.4-2.1-2c-1-0.9-1.9-1.7-3-2.9c-0.1,0.1-0.3,0.2-0.5,0.4
+                c-3.3,3.2-16.9,16.6-20.8,20.4C-71-8.7-59.3,3.8-53.9,9.2l1.9-2c1.2-1.2,2.3-2.3,3.6-3.6c-2.1-2.2-7.5-8.1-8.7-9.3l-0.7-0.7l0.8-1.9
+                l1.1-0.1c2.2,0,17.4,0,19.7,0c3.4,0,6.6,0.9,9.3,2.9c3.2,2.3,5.3,5.5,6,9.3c0.6,3.3,0.3,6.3-1,8.9c-1.4,3-3.4,5.3-6.2,6.9
+                c-1.7,1-3.6,1.7-6,2c0,2.6,0,5.2,0,7.7l0,1.1c2.4-0.2,4.8-0.9,6-1.3c1.6-0.6,3.7-1.5,5.6-2.7c3.7-2.4,6.4-5.5,8.1-9.3
+                c0.9-2,1.8-4.3,2.1-6.5C-11.7,7.3-11.8,4.3-12.5,1.6z" />
+                    <path d="M-33-14.8c-14.2,0-25.8,11.6-25.8,25.8c0,3.2,0.7,6.4,1.8,9.4c-0.1,0.1-0.2,0.3-0.2,0.3l-0.6,0.7
+                c-0.4,0.4-0.9,0.5-1.5,0.3l-0.2-0.1c-1.7-0.7-7-2.8-8.9-3.5c-0.3,0.8-0.5,1.5-0.8,2.2c-0.3,1-0.7,1.9-1.1,3.2
+                c0.1,0.1,0.2,0.1,0.5,0.2C-66.3,25-52,30.5-48,32.1c1.6-3.7,6.8-16.4,9-22.2L-41,9.1c-1.2-0.5-2.4-0.9-3.8-1.4
+                c-0.9,2.2-3.6,8.7-3.9,9.4c-0.3,0.7-1,0.8-1.9,0.8c-0.1,0-0.2,0-0.4,0c-0.9-2.2-1.3-4.6-1.3-7c0-10.7,8.7-19.4,19.4-19.4
+                S-13.6,0.3-13.6,11c0,10.7-8.7,19.4-19.4,19.4v6.4c14.2,0,25.8-11.6,25.8-25.8C-7.2-3.2-18.8-14.8-33-14.8z" />
+                    <g>
+                        <path d="M-39-13.5c-17.4,0-31.5,14.1-31.5,31.5S-56.4,49.5-39,49.5S-7.5,35.4-7.5,18S-21.6-13.5-39-13.5z M-10.9,18
+                  c0,15.5-12.6,28.1-28.1,28.1S-67.1,33.5-67.1,18c0-15.5,12.6-28.1,28.1-28.1S-10.9,2.5-10.9,18z" />
+                        <g>
+                            <g>
+                                <path d="M-48.8,39.4v-2.7l5.4-1.4V14.4l-6.1-1.4v-2.7c4.6-0.2,15.6,0,15.6,0v25l5.4,1.4v2.7H-48.8z" />
+                            </g>
+                            <g>
+                                <path d="M-39,6.5c-3.3,0-6.2-2.9-6.2-6.2c0-3.3,2.9-6.2,6.2-6.2c3.3,0,6.2,2.9,6.2,6.2C-32.8,3.7-35.7,6.5-39,6.5z" />
+                            </g>
+                        </g>
+                    </g>
+                    <g>
+                        <path d="M-54.2,66.1c-0.8,0-1.5-0.2-2.1-0.7c-1.1-0.8-1.6-2.1-1.5-3.4l2-16.9c0-0.2,0-0.4-0.2-0.5l-11.5-12.4
+                  c-0.9-1-1.2-2.3-0.8-3.6c0.4-1.3,1.5-2.2,2.8-2.5l16.7-3.3c0.2,0,0.3-0.1,0.4-0.3l8.3-14.8c0.7-1.2,1.8-1.9,3.2-1.9
+                  c1.3,0,2.5,0.7,3.2,1.9l8.3,14.8c0.1,0.2,0.2,0.3,0.4,0.3l16.7,3.3c1.3,0.3,2.4,1.2,2.8,2.5c0.4,1.3,0.1,2.6-0.8,3.6L-18,44.7
+                  c-0.1,0.1-0.2,0.3-0.2,0.5l2,16.9c0.2,1.3-0.4,2.6-1.5,3.4c-1.1,0.8-2.5,0.9-3.7,0.4l-15.4-7.1c-0.2-0.1-0.4-0.1-0.5,0l-15.4,7.1
+                  C-53.2,66-53.7,66.1-54.2,66.1z M-37,8.9c-0.1,0-0.4,0-0.5,0.3l-8.3,14.8c-0.5,0.9-1.4,1.6-2.5,1.8L-65,29.1
+                  c-0.3,0.1-0.4,0.3-0.5,0.4c0,0.1-0.1,0.4,0.1,0.6l11.5,12.4c0.7,0.8,1.1,1.9,1,2.9l-2,16.9c0,0.3,0.1,0.5,0.2,0.6
+                  c0.1,0.1,0.3,0.2,0.6,0.1l15.4-7.1c1-0.5,2.1-0.5,3.1,0l15.4,7.1c0.3,0.1,0.5,0,0.6-0.1c0.1-0.1,0.3-0.3,0.2-0.6l-2-16.9
+                  c-0.1-1.1,0.2-2.1,1-2.9l11.5-12.4c0.2-0.2,0.2-0.5,0.1-0.6c0-0.1-0.2-0.4-0.5-0.4l-16.7-3.3c-1.1-0.2-2-0.9-2.5-1.8l-8.3-14.8
+                  C-36.6,8.9-36.9,8.9-37,8.9z" />
+                    </g>
+                    <g>
+                        <path d="M-53.1,36.7c-3.2,0-6.3,0-9.5,0c0,3.2,0,6.3,0,9.5c3.2,0,6.3,0,9.5,0C-53.1,43-53.1,39.8-53.1,36.7z" />
+                        <path d="M-46.9,46.2c3.2,0,6.3,0,9.5,0c0-3.2,0-6.4,0-9.5c-3.2,0-6.3,0-9.5,0C-46.9,39.9-46.9,43-46.9,46.2z" />
+                        <path d="M-21.8,36.7c-3.2,0-6.3,0-9.5,0c0,3.2,0,6.3,0,9.5c3.2,0,6.3,0,9.5,0C-21.8,43-21.8,39.8-21.8,36.7z" />
+                        <path d="M-62.6,60.4c0,0.1,0.3,0.4,0.5,0.4c3,0,6,0,9,0c0-3.2,0-6.4,0-9.5c-3.2,0-6.3,0-9.5,0
+                  C-62.6,54.3-62.6,57.4-62.6,60.4z" />
+                        <path d="M-46.9,60.7c3.2,0,6.3,0,9.5,0c0-3.2,0-6.3,0-9.5c-3.2,0-6.3,0-9.5,0C-46.9,54.5-46.9,57.6-46.9,60.7z" />
+                        <path d="M-31.3,60.7c3.2,0,6.3,0,9.5,0c0-3.2,0-6.3,0-9.5c-3.2,0-6.3,0-9.5,0C-31.3,54.5-31.3,57.6-31.3,60.7z" />
+                        <path d="M-10.5,40.7c0-5,0-10,0-15c0-0.9,0-1.9,0-2.8c0,0,0,0,0,0c0,0,0-0.1,0-0.1c0-3.5-2.7-5.8-6.3-5.5
+                  c-0.3,0-0.6,0-0.8,0c-0.1,1.1-0.1,2.1-0.2,3.1c-0.2,1.8-1.6,3.4-3.3,4c-0.4,0.1-0.9,0.2-1.4,0.2c-0.5,0-0.9,0-1.4-0.2
+                  c-1.1-0.3-2-0.9-2.7-1.8c-0.3-0.4-0.5-0.9-0.7-1.4c-0.3-0.9-0.2-2-0.2-3c0-0.3,0-0.5-0.1-0.6c0-0.1,0-0.1,0-0.2c-0.2,0-0.3,0-0.4,0
+                  c-0.1,0-0.2,0-0.4,0c-4.5,0-9.1,0-13.6,0c-4.5,0-9.1,0-13.6,0c-0.2,0-0.3,0-0.4,0c-0.1,0-0.3,0-0.4,0c0,0.1,0,0.1,0,0.2
+                  c-0.1,0.1-0.1,0.3-0.1,0.6c0,1,0.1,2-0.2,3c-0.2,0.6-0.4,1-0.7,1.4c-0.7,0.9-1.6,1.5-2.7,1.8c-0.5,0.1-0.9,0.2-1.4,0.2
+                  c-0.5,0-0.9-0.1-1.4-0.2c-1.7-0.5-3.1-2.1-3.3-4c-0.1-1-0.1-2-0.2-3.1c-0.3,0-0.6,0-0.8,0c-3.6-0.3-6.3,2.1-6.3,5.5
+                  c0,0,0,0.1,0,0.1c0,0,0,0,0,0c0,0.9,0,1.9,0,2.8c0,5,0,10,0,15c0,0.2,0,0.3,0,0.6h0c0,7.8,0,15.7,0,23.5c0,3.3,2.3,5.7,5.7,5.7
+                  c7.8,0,15.7,0,23.5,0l0,0c0.3,0,0.5,0,0.8,0c0.5,0,1,0,1.6,0c0.5,0,1,0,1.6,0c0.3,0,0.5,0,0.8,0l0,0c7.8,0,15.7,0,23.5,0
+                  c3.3,0,5.7-2.3,5.7-5.7c0-7.8,0-15.7,0-23.5c0,0,0,0,0,0C-10.5,41.1-10.5,40.9-10.5,40.7z M-16.5,65.8c-7.7,0-15.4,0-23.1,0
+                  c-0.4,0-0.6,0-0.9,0c-0.5,0-0.9,0-1.4,0s-0.9,0-1.4,0c-0.3,0-0.6,0-0.9,0c-7.7,0-15.4,0-23.1,0c-1.2,0-1.2,0-1.2-1.2
+                  c0-10.7,0-21.4,0-32.1c0-0.2,0-0.5,0-0.7c0.1-0.1,0.1-0.1,0.3-0.1c0.1,0,0.1,0,0.2,0c8.7,0,17.5,0,26.2,0c8.7,0,17.5,0,26.2,0
+                  c0.1,0,0.1,0,0.2,0c0.1,0,0.2,0.1,0.3,0.1c0,0.2,0,0.5,0,0.7c0,10.7,0,21.4,0,32.1C-15.3,65.8-15.4,65.8-16.5,65.8z" />
+                        <path d="M-61.2,21.9c1.2,0,2.1-1,2.1-2.3c0-1.6,0-3.2,0-4.8c0-1.6,0-3.2,0-4.8c0-1.3-1-2.4-2.2-2.4
+                  c-1.2,0-2.5,1.1-2.5,2.3c0,3.3,0,6.6,0,9.9C-63.7,21.1-62.6,22-61.2,21.9z" />
+                        <path d="M-24.9,19.6c0,1.3,1,2.3,2.2,2.3c1.4,0,2.4-0.9,2.5-2.2c0-3.3,0-6.6,0-9.8c0-1.3-1.2-2.4-2.4-2.3
+                  c-1.2,0-2.3,1.1-2.3,2.4c0,1.6,0,3.2,0,4.8C-24.9,16.4-24.9,18-24.9,19.6z" />
+                    </g>
+                    <g>
+                        <path d="M27,0.5c3.3,0,6.6,0,10,0c0.7,0.3,1.1,0.8,1.2,1.6c0.3,2.3,0.7,4.6,1,6.9c0,0.3,0.1,0.4,0.4,0.5
+                  c1,0.4,2,0.8,3.1,1.3c0.1,0.1,0.4,0,0.5-0.1c1.8-1.4,3.6-2.7,5.5-4.1c0.9-0.7,1.5-0.6,2.3,0.1c2.2,2.1,4.4,4.1,6.3,6.5
+                  c0.6,0.8,0.7,1.5,0.1,2.3c-1.3,1.7-2.6,3.4-3.9,5.1c-0.2,0.3-0.2,0.5-0.1,0.8c0.5,1,0.9,2.1,1.3,3.1c0.1,0.3,0.3,0.5,0.6,0.5
+                  c2,0.3,3.9,0.6,5.9,0.9c0.9,0.1,1.9,0.2,2.4,1.2c0,3.3,0,6.6,0,10c-0.3,0.6-0.8,1-1.6,1.1c-2.2,0.3-4.5,0.7-6.7,1
+                  c-0.3,0-0.5,0.2-0.6,0.5c-0.4,1-0.8,1.9-1.2,2.9c-0.1,0.3-0.1,0.5,0.1,0.8c1.3,1.7,2.6,3.4,3.9,5.1c0.8,1,0.8,1.5,0,2.4
+                  c-1.9,2.3-4,4.4-6.2,6.3c-1.2,1-1.8,1-3.1,0c0,0,0,0,0,0c-1.6-1.3-3.2-2.5-4.8-3.8c-0.1-0.1-0.4-0.1-0.6-0.1c-1,0.4-2,0.9-3,1.3
+                  c-0.3,0.1-0.4,0.3-0.5,0.6c-0.3,2.2-0.7,4.4-1,6.7c-0.1,0.7-0.4,1.3-1.1,1.7c-3.3,0-6.6,0-10,0c-0.8-0.3-1.1-0.9-1.2-1.7
+                  c-0.3-2.2-0.7-4.4-1-6.7c0-0.3-0.1-0.4-0.4-0.5c-1-0.4-2-0.8-3.1-1.3c-0.1-0.1-0.4,0-0.5,0.1c-0.2,0.1-0.4,0.2-0.5,0.4
+                  c-1.6,1.2-3.3,2.5-4.9,3.7c-0.9,0.7-1.5,0.6-2.3-0.1c-2.2-2.1-4.5-4.1-6.3-6.4c-0.6-0.8-0.7-1.6-0.1-2.4c1.3-1.7,2.6-3.4,3.9-5.1
+                  c0.2-0.3,0.2-0.5,0.1-0.8c-0.5-1-0.9-2.1-1.3-3.1C9.2,39.2,9.1,39,8.7,39c-1.9-0.3-3.9-0.6-5.8-0.8c-1-0.1-2-0.2-2.4-1.3
+                  c0-3.3,0-6.6,0-9.9c0.3-0.6,0.8-1.1,1.6-1.2c2.3-0.3,4.6-0.7,6.9-1c0.2,0,0.4-0.2,0.4-0.4c0.5-1,0.9-2,1.3-3
+                  c0.1-0.3,0.2-0.5-0.1-0.7c-1.3-1.7-2.6-3.4-4-5.1c-0.8-1-0.8-1.5,0-2.4c0.9-1,1.8-2.1,2.8-3.1c1.3-1.4,2.6-2.7,4.2-3.8
+                  C14.1,6,14.6,6,15,6.3c0.3,0.2,0.5,0.3,0.8,0.5c1.7,1.3,3.3,2.6,5,3.9c0.1,0.1,0.4,0.1,0.6,0.1c1-0.4,2-0.9,3.1-1.3
+                  c0.3-0.1,0.4-0.3,0.4-0.5c0.3-2.2,0.7-4.5,1-6.7C26,1.4,26.3,0.8,27,0.5z M32,19c-7-0.2-13,6-13,13c0,7,6,13.1,13,13
+                  c7.2-0.1,12.9-5.7,13-13C45.1,25,39,18.8,32,19z" />
+                    </g>
+                </svg>
+            </a>
+        </nav>
+        <nav class="menu">
+            <!-- <div class="design-angle"><span><span></span></span></div> -->
+            <ul>
+                <li>
+                    <span>Son</span>
+                    <button class="off">
+                        <span></span>
+                    </button>
+                </li>
+                <li>
+                    <span>Minuteur</span>
+                    <button class="on">
+                        <span></span>
+                    </button>
+                </li>
+                <li><a href="admin.html">Se connecter</a></li>
+                <li><a href="help.html">Centre d'aide</a></li>
+                <li><a href="opinion.html">Donner mon avis</a></li>
+                <div class="menu-color">
+                    <span>
+                        <a href="#" class="btn">
+                                </a>
+                    </span>
+                    <span>
+                        <a href="#" class="btn">
+                                </a>
+                    </span>
+                    <span class="actif">
+                        <a href="#" class="btn">
+                                </a>
+                    </span>
+                    <span>
+                        <a href="#" class="btn">
+                                </a>
+                    </span>
+                    <span>
+                        <a href="#" class="btn">
+                                </a>
+                    </span>
+                </div>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="particules">
+            <span data-posleft="-100" data-postop="-1"></span>
+            <span data-posleft="-100" data-postop="2"></span>
+            <span data-posleft="-100" data-postop="8"></span>
+            <span data-posleft="-100" data-postop="20"></span>
+            <span data-posleft="-97" data-postop="-25"></span>
+            <span data-posleft="-97" data-postop="-7"></span>
+            <span data-posleft="-97" data-postop="2"></span>
+            <span data-posleft="-97" data-postop="11"></span>
+            <span data-posleft="-97" data-postop="23"></span>
+            <span data-posleft="-94" data-postop="-34"></span>
+            <span data-posleft="-94" data-postop="-28"></span>
+            <span data-posleft="-94" data-postop="-7"></span>
+            <span data-posleft="-94" data-postop="20"></span>
+            <span data-posleft="-94" data-postop="32"></span>
+            <span data-posleft="-91" data-postop="-37"></span>
+            <span data-posleft="-91" data-postop="-22"></span>
+            <span data-posleft="-91" data-postop="-4"></span>
+            <span data-posleft="-91" data-postop="2"></span>
+            <span data-posleft="-91" data-postop="5"></span>
+            <span data-posleft="-91" data-postop="23"></span>
+            <span data-posleft="-91" data-postop="26"></span>
+            <span data-posleft="-88" data-postop="-40"></span>
+            <span data-posleft="-88" data-postop="-34"></span>
+            <span data-posleft="-88" data-postop="-25"></span>
+            <span data-posleft="-88" data-postop="8"></span>
+            <span data-posleft="-88" data-postop="11"></span>
+            <span data-posleft="-88" data-postop="26"></span>
+            <span data-posleft="-88" data-postop="41"></span>
+            <span data-posleft="-85" data-postop="-40"></span>
+            <span data-posleft="-85" data-postop="-28"></span>
+            <span data-posleft="-85" data-postop="-25"></span>
+            <span data-posleft="-85" data-postop="-10"></span>
+            <span data-posleft="-85" data-postop="-4"></span>
+            <span data-posleft="-85" data-postop="-1"></span>
+            <span data-posleft="-85" data-postop="2"></span>
+            <span data-posleft="-85" data-postop="17"></span>
+            <span data-posleft="-85" data-postop="32"></span>
+            <span data-posleft="-85" data-postop="47"></span>
+            <span data-posleft="-82" data-postop="-52"></span>
+            <span data-posleft="-82" data-postop="-37"></span>
+            <span data-posleft="-82" data-postop="-25"></span>
+            <span data-posleft="-82" data-postop="-13"></span>
+            <span data-posleft="-82" data-postop="-10"></span>
+            <span data-posleft="-82" data-postop="14"></span>
+            <span data-posleft="-82" data-postop="20"></span>
+            <span data-posleft="-82" data-postop="23"></span>
+            <span data-posleft="-82" data-postop="53"></span>
+            <span data-posleft="-79" data-postop="-52"></span>
+            <span data-posleft="-79" data-postop="2"></span>
+            <span data-posleft="-79" data-postop="5"></span>
+            <span data-posleft="-79" data-postop="8"></span>
+            <span data-posleft="-79" data-postop="11"></span>
+            <span data-posleft="-79" data-postop="20"></span>
+            <span data-posleft="-79" data-postop="26"></span>
+            <span data-posleft="-79" data-postop="32"></span>
+            <span data-posleft="-79" data-postop="56"></span>
+            <span data-posleft="-76" data-postop="-64"></span>
+            <span data-posleft="-76" data-postop="-61"></span>
+            <span data-posleft="-76" data-postop="-58"></span>
+            <span data-posleft="-76" data-postop="-49"></span>
+            <span data-posleft="-76" data-postop="-46"></span>
+            <span data-posleft="-76" data-postop="-25"></span>
+            <span data-posleft="-76" data-postop="-13"></span>
+            <span data-posleft="-76" data-postop="-7"></span>
+            <span data-posleft="-76" data-postop="2"></span>
+            <span data-posleft="-76" data-postop="5"></span>
+            <span data-posleft="-76" data-postop="11"></span>
+            <span data-posleft="-76" data-postop="23"></span>
+            <span data-posleft="-76" data-postop="29"></span>
+            <span data-posleft="-76" data-postop="32"></span>
+            <span data-posleft="-76" data-postop="35"></span>
+            <span data-posleft="-76" data-postop="56"></span>
+            <span data-posleft="-76" data-postop="65"></span>
+            <span data-posleft="-73" data-postop="-61"></span>
+            <span data-posleft="-73" data-postop="-34"></span>
+            <span data-posleft="-73" data-postop="-28"></span>
+            <span data-posleft="-73" data-postop="-25"></span>
+            <span data-posleft="-73" data-postop="-13"></span>
+            <span data-posleft="-73" data-postop="-7"></span>
+            <span data-posleft="-73" data-postop="-1"></span>
+            <span data-posleft="-73" data-postop="2"></span>
+            <span data-posleft="-73" data-postop="17"></span>
+            <span data-posleft="-73" data-postop="26"></span>
+            <span data-posleft="-73" data-postop="38"></span>
+            <span data-posleft="-73" data-postop="47"></span>
+            <span data-posleft="-73" data-postop="62"></span>
+            <span data-posleft="-70" data-postop="-70"></span>
+            <span data-posleft="-70" data-postop="-58"></span>
+            <span data-posleft="-70" data-postop="-55"></span>
+            <span data-posleft="-70" data-postop="-40"></span>
+            <span data-posleft="-70" data-postop="-37"></span>
+            <span data-posleft="-70" data-postop="-34"></span>
+            <span data-posleft="-70" data-postop="-19"></span>
+            <span data-posleft="-70" data-postop="-13"></span>
+            <span data-posleft="-70" data-postop="-7"></span>
+            <span data-posleft="-70" data-postop="-4"></span>
+            <span data-posleft="-70" data-postop="2"></span>
+            <span data-posleft="-70" data-postop="5"></span>
+            <span data-posleft="-70" data-postop="11"></span>
+            <span data-posleft="-70" data-postop="17"></span>
+            <span data-posleft="-70" data-postop="23"></span>
+            <span data-posleft="-70" data-postop="32"></span>
+            <span data-posleft="-70" data-postop="35"></span>
+            <span data-posleft="-70" data-postop="41"></span>
+            <span data-posleft="-70" data-postop="50"></span>
+            <span data-posleft="-70" data-postop="53"></span>
+            <span data-posleft="-67" data-postop="-73"></span>
+            <span data-posleft="-67" data-postop="-34"></span>
+            <span data-posleft="-67" data-postop="-31"></span>
+            <span data-posleft="-67" data-postop="-19"></span>
+            <span data-posleft="-67" data-postop="-16"></span>
+            <span data-posleft="-67" data-postop="-7"></span>
+            <span data-posleft="-67" data-postop="5"></span>
+            <span data-posleft="-67" data-postop="8"></span>
+            <span data-posleft="-67" data-postop="11"></span>
+            <span data-posleft="-67" data-postop="20"></span>
+            <span data-posleft="-67" data-postop="29"></span>
+            <span data-posleft="-67" data-postop="47"></span>
+            <span data-posleft="-67" data-postop="53"></span>
+            <span data-posleft="-67" data-postop="65"></span>
+            <span data-posleft="-64" data-postop="-22"></span>
+            <span data-posleft="-64" data-postop="-13"></span>
+            <span data-posleft="-64" data-postop="-10"></span>
+            <span data-posleft="-64" data-postop="-7"></span>
+            <span data-posleft="-64" data-postop="5"></span>
+            <span data-posleft="-64" data-postop="8"></span>
+            <span data-posleft="-64" data-postop="50"></span>
+            <span data-posleft="-64" data-postop="71"></span>
+            <span data-posleft="-61" data-postop="-79"></span>
+            <span data-posleft="-61" data-postop="-70"></span>
+            <span data-posleft="-61" data-postop="-55"></span>
+            <span data-posleft="-61" data-postop="-49"></span>
+            <span data-posleft="-61" data-postop="-31"></span>
+            <span data-posleft="-61" data-postop="-22"></span>
+            <span data-posleft="-61" data-postop="-16"></span>
+            <span data-posleft="-61" data-postop="-10"></span>
+            <span data-posleft="-61" data-postop="-7"></span>
+            <span data-posleft="-61" data-postop="-4"></span>
+            <span data-posleft="-61" data-postop="-1"></span>
+            <span data-posleft="-61" data-postop="2"></span>
+            <span data-posleft="-61" data-postop="5"></span>
+            <span data-posleft="-61" data-postop="8"></span>
+            <span data-posleft="-61" data-postop="11"></span>
+            <span data-posleft="-61" data-postop="17"></span>
+            <span data-posleft="-61" data-postop="23"></span>
+            <span data-posleft="-61" data-postop="32"></span>
+            <span data-posleft="-61" data-postop="47"></span>
+            <span data-posleft="-61" data-postop="53"></span>
+            <span data-posleft="-61" data-postop="65"></span>
+            <span data-posleft="-61" data-postop="71"></span>
+            <span data-posleft="-58" data-postop="-76"></span>
+            <span data-posleft="-58" data-postop="-73"></span>
+            <span data-posleft="-58" data-postop="-40"></span>
+            <span data-posleft="-58" data-postop="-37"></span>
+            <span data-posleft="-58" data-postop="-34"></span>
+            <span data-posleft="-58" data-postop="-4"></span>
+            <span data-posleft="-58" data-postop="8"></span>
+            <span data-posleft="-58" data-postop="14"></span>
+            <span data-posleft="-58" data-postop="17"></span>
+            <span data-posleft="-58" data-postop="53"></span>
+            <span data-posleft="-58" data-postop="65"></span>
+            <span data-posleft="-58" data-postop="77"></span>
+            <span data-posleft="-55" data-postop="-82"></span>
+            <span data-posleft="-55" data-postop="-58"></span>
+            <span data-posleft="-55" data-postop="-55"></span>
+            <span data-posleft="-55" data-postop="-52"></span>
+            <span data-posleft="-55" data-postop="-43"></span>
+            <span data-posleft="-55" data-postop="-28"></span>
+            <span data-posleft="-55" data-postop="-25"></span>
+            <span data-posleft="-55" data-postop="-22"></span>
+            <span data-posleft="-55" data-postop="-16"></span>
+            <span data-posleft="-55" data-postop="-7"></span>
+            <span data-posleft="-55" data-postop="-4"></span>
+            <span data-posleft="-55" data-postop="5"></span>
+            <span data-posleft="-55" data-postop="8"></span>
+            <span data-posleft="-55" data-postop="11"></span>
+            <span data-posleft="-55" data-postop="14"></span>
+            <span data-posleft="-55" data-postop="20"></span>
+            <span data-posleft="-55" data-postop="23"></span>
+            <span data-posleft="-55" data-postop="29"></span>
+            <span data-posleft="-55" data-postop="35"></span>
+            <span data-posleft="-55" data-postop="41"></span>
+            <span data-posleft="-55" data-postop="53"></span>
+            <span data-posleft="-55" data-postop="62"></span>
+            <span data-posleft="-55" data-postop="71"></span>
+            <span data-posleft="-55" data-postop="80"></span>
+            <span data-posleft="-52" data-postop="-82"></span>
+            <span data-posleft="-52" data-postop="-70"></span>
+            <span data-posleft="-52" data-postop="-61"></span>
+            <span data-posleft="-52" data-postop="-55"></span>
+            <span data-posleft="-52" data-postop="-43"></span>
+            <span data-posleft="-52" data-postop="-40"></span>
+            <span data-posleft="-52" data-postop="-37"></span>
+            <span data-posleft="-52" data-postop="-22"></span>
+            <span data-posleft="-52" data-postop="-16"></span>
+            <span data-posleft="-52" data-postop="-10"></span>
+            <span data-posleft="-52" data-postop="-7"></span>
+            <span data-posleft="-52" data-postop="-1"></span>
+            <span data-posleft="-52" data-postop="2"></span>
+            <span data-posleft="-52" data-postop="8"></span>
+            <span data-posleft="-52" data-postop="11"></span>
+            <span data-posleft="-52" data-postop="17"></span>
+            <span data-posleft="-52" data-postop="26"></span>
+            <span data-posleft="-52" data-postop="29"></span>
+            <span data-posleft="-52" data-postop="32"></span>
+            <span data-posleft="-52" data-postop="44"></span>
+            <span data-posleft="-52" data-postop="56"></span>
+            <span data-posleft="-52" data-postop="65"></span>
+            <span data-posleft="-52" data-postop="74"></span>
+            <span data-posleft="-49" data-postop="-88"></span>
+            <span data-posleft="-49" data-postop="-61"></span>
+            <span data-posleft="-49" data-postop="-28"></span>
+            <span data-posleft="-49" data-postop="-25"></span>
+            <span data-posleft="-49" data-postop="-16"></span>
+            <span data-posleft="-49" data-postop="5"></span>
+            <span data-posleft="-49" data-postop="8"></span>
+            <span data-posleft="-49" data-postop="11"></span>
+            <span data-posleft="-49" data-postop="41"></span>
+            <span data-posleft="-49" data-postop="44"></span>
+            <span data-posleft="-49" data-postop="62"></span>
+            <span data-posleft="-49" data-postop="83"></span>
+            <span data-posleft="-46" data-postop="-52"></span>
+            <span data-posleft="-46" data-postop="-49"></span>
+            <span data-posleft="-46" data-postop="-37"></span>
+            <span data-posleft="-46" data-postop="-34"></span>
+            <span data-posleft="-46" data-postop="-28"></span>
+            <span data-posleft="-46" data-postop="-25"></span>
+            <span data-posleft="-46" data-postop="-22"></span>
+            <span data-posleft="-46" data-postop="-16"></span>
+            <span data-posleft="-46" data-postop="-4"></span>
+            <span data-posleft="-46" data-postop="-1"></span>
+            <span data-posleft="-46" data-postop="2"></span>
+            <span data-posleft="-46" data-postop="5"></span>
+            <span data-posleft="-46" data-postop="17"></span>
+            <span data-posleft="-46" data-postop="20"></span>
+            <span data-posleft="-46" data-postop="23"></span>
+            <span data-posleft="-46" data-postop="26"></span>
+            <span data-posleft="-46" data-postop="32"></span>
+            <span data-posleft="-46" data-postop="38"></span>
+            <span data-posleft="-46" data-postop="41"></span>
+            <span data-posleft="-46" data-postop="53"></span>
+            <span data-posleft="-46" data-postop="56"></span>
+            <span data-posleft="-46" data-postop="65"></span>
+            <span data-posleft="-46" data-postop="68"></span>
+            <span data-posleft="-46" data-postop="83"></span>
+            <span data-posleft="-43" data-postop="-61"></span>
+            <span data-posleft="-43" data-postop="-58"></span>
+            <span data-posleft="-43" data-postop="-52"></span>
+            <span data-posleft="-43" data-postop="-25"></span>
+            <span data-posleft="-43" data-postop="-22"></span>
+            <span data-posleft="-43" data-postop="-13"></span>
+            <span data-posleft="-43" data-postop="-10"></span>
+            <span data-posleft="-43" data-postop="-7"></span>
+            <span data-posleft="-43" data-postop="2"></span>
+            <span data-posleft="-43" data-postop="8"></span>
+            <span data-posleft="-43" data-postop="11"></span>
+            <span data-posleft="-43" data-postop="20"></span>
+            <span data-posleft="-43" data-postop="23"></span>
+            <span data-posleft="-43" data-postop="29"></span>
+            <span data-posleft="-43" data-postop="32"></span>
+            <span data-posleft="-43" data-postop="38"></span>
+            <span data-posleft="-43" data-postop="41"></span>
+            <span data-posleft="-43" data-postop="56"></span>
+            <span data-posleft="-43" data-postop="65"></span>
+            <span data-posleft="-43" data-postop="83"></span>
+            <span data-posleft="-40" data-postop="-91"></span>
+            <span data-posleft="-40" data-postop="-79"></span>
+            <span data-posleft="-40" data-postop="-73"></span>
+            <span data-posleft="-40" data-postop="-70"></span>
+            <span data-posleft="-40" data-postop="-22"></span>
+            <span data-posleft="-40" data-postop="-19"></span>
+            <span data-posleft="-40" data-postop="-13"></span>
+            <span data-posleft="-40" data-postop="5"></span>
+            <span data-posleft="-40" data-postop="8"></span>
+            <span data-posleft="-40" data-postop="26"></span>
+            <span data-posleft="-40" data-postop="47"></span>
+            <span data-posleft="-40" data-postop="53"></span>
+            <span data-posleft="-40" data-postop="59"></span>
+            <span data-posleft="-40" data-postop="65"></span>
+            <span data-posleft="-40" data-postop="68"></span>
+            <span data-posleft="-40" data-postop="80"></span>
+            <span data-posleft="-40" data-postop="89"></span>
+            <span data-posleft="-37" data-postop="-88"></span>
+            <span data-posleft="-37" data-postop="-79"></span>
+            <span data-posleft="-37" data-postop="-76"></span>
+            <span data-posleft="-37" data-postop="-67"></span>
+            <span data-posleft="-37" data-postop="-64"></span>
+            <span data-posleft="-37" data-postop="-52"></span>
+            <span data-posleft="-37" data-postop="-49"></span>
+            <span data-posleft="-37" data-postop="-43"></span>
+            <span data-posleft="-37" data-postop="-37"></span>
+            <span data-posleft="-37" data-postop="-34"></span>
+            <span data-posleft="-37" data-postop="-31"></span>
+            <span data-posleft="-37" data-postop="-25"></span>
+            <span data-posleft="-37" data-postop="-22"></span>
+            <span data-posleft="-37" data-postop="-19"></span>
+            <span data-posleft="-37" data-postop="-13"></span>
+            <span data-posleft="-37" data-postop="-10"></span>
+            <span data-posleft="-37" data-postop="-7"></span>
+            <span data-posleft="-37" data-postop="-4"></span>
+            <span data-posleft="-37" data-postop="-1"></span>
+            <span data-posleft="-37" data-postop="2"></span>
+            <span data-posleft="-37" data-postop="5"></span>
+            <span data-posleft="-37" data-postop="8"></span>
+            <span data-posleft="-37" data-postop="17"></span>
+            <span data-posleft="-37" data-postop="20"></span>
+            <span data-posleft="-37" data-postop="23"></span>
+            <span data-posleft="-37" data-postop="29"></span>
+            <span data-posleft="-37" data-postop="38"></span>
+            <span data-posleft="-37" data-postop="41"></span>
+            <span data-posleft="-37" data-postop="47"></span>
+            <span data-posleft="-37" data-postop="53"></span>
+            <span data-posleft="-37" data-postop="56"></span>
+            <span data-posleft="-37" data-postop="65"></span>
+            <span data-posleft="-37" data-postop="71"></span>
+            <span data-posleft="-37" data-postop="92"></span>
+            <span data-posleft="-34" data-postop="-82"></span>
+            <span data-posleft="-34" data-postop="-79"></span>
+            <span data-posleft="-34" data-postop="-67"></span>
+            <span data-posleft="-34" data-postop="-64"></span>
+            <span data-posleft="-34" data-postop="-61"></span>
+            <span data-posleft="-34" data-postop="-49"></span>
+            <span data-posleft="-34" data-postop="-46"></span>
+            <span data-posleft="-34" data-postop="-43"></span>
+            <span data-posleft="-34" data-postop="-34"></span>
+            <span data-posleft="-34" data-postop="-31"></span>
+            <span data-posleft="-34" data-postop="-10"></span>
+            <span data-posleft="-34" data-postop="-4"></span>
+            <span data-posleft="-34" data-postop="-1"></span>
+            <span data-posleft="-34" data-postop="2"></span>
+            <span data-posleft="-34" data-postop="5"></span>
+            <span data-posleft="-34" data-postop="8"></span>
+            <span data-posleft="-34" data-postop="11"></span>
+            <span data-posleft="-34" data-postop="14"></span>
+            <span data-posleft="-34" data-postop="17"></span>
+            <span data-posleft="-34" data-postop="29"></span>
+            <span data-posleft="-34" data-postop="32"></span>
+            <span data-posleft="-34" data-postop="38"></span>
+            <span data-posleft="-34" data-postop="41"></span>
+            <span data-posleft="-34" data-postop="56"></span>
+            <span data-posleft="-34" data-postop="59"></span>
+            <span data-posleft="-34" data-postop="68"></span>
+            <span data-posleft="-34" data-postop="77"></span>
+            <span data-posleft="-34" data-postop="83"></span>
+            <span data-posleft="-34" data-postop="89"></span>
+            <span data-posleft="-34" data-postop="92"></span>
+            <span data-posleft="-31" data-postop="-91"></span>
+            <span data-posleft="-31" data-postop="-85"></span>
+            <span data-posleft="-31" data-postop="-76"></span>
+            <span data-posleft="-31" data-postop="-70"></span>
+            <span data-posleft="-31" data-postop="-61"></span>
+            <span data-posleft="-31" data-postop="-55"></span>
+            <span data-posleft="-31" data-postop="-52"></span>
+            <span data-posleft="-31" data-postop="-49"></span>
+            <span data-posleft="-31" data-postop="-46"></span>
+            <span data-posleft="-31" data-postop="-43"></span>
+            <span data-posleft="-31" data-postop="-37"></span>
+            <span data-posleft="-31" data-postop="-31"></span>
+            <span data-posleft="-31" data-postop="-25"></span>
+            <span data-posleft="-31" data-postop="-22"></span>
+            <span data-posleft="-31" data-postop="-13"></span>
+            <span data-posleft="-31" data-postop="-4"></span>
+            <span data-posleft="-31" data-postop="-1"></span>
+            <span data-posleft="-31" data-postop="2"></span>
+            <span data-posleft="-31" data-postop="5"></span>
+            <span data-posleft="-31" data-postop="14"></span>
+            <span data-posleft="-31" data-postop="26"></span>
+            <span data-posleft="-31" data-postop="29"></span>
+            <span data-posleft="-31" data-postop="32"></span>
+            <span data-posleft="-31" data-postop="35"></span>
+            <span data-posleft="-31" data-postop="41"></span>
+            <span data-posleft="-31" data-postop="47"></span>
+            <span data-posleft="-31" data-postop="53"></span>
+            <span data-posleft="-31" data-postop="56"></span>
+            <span data-posleft="-31" data-postop="59"></span>
+            <span data-posleft="-31" data-postop="68"></span>
+            <span data-posleft="-31" data-postop="71"></span>
+            <span data-posleft="-31" data-postop="74"></span>
+            <span data-posleft="-31" data-postop="83"></span>
+            <span data-posleft="-31" data-postop="86"></span>
+            <span data-posleft="-28" data-postop="-85"></span>
+            <span data-posleft="-28" data-postop="-82"></span>
+            <span data-posleft="-28" data-postop="-79"></span>
+            <span data-posleft="-28" data-postop="-58"></span>
+            <span data-posleft="-28" data-postop="-49"></span>
+            <span data-posleft="-28" data-postop="-43"></span>
+            <span data-posleft="-28" data-postop="-37"></span>
+            <span data-posleft="-28" data-postop="-34"></span>
+            <span data-posleft="-28" data-postop="-25"></span>
+            <span data-posleft="-28" data-postop="-16"></span>
+            <span data-posleft="-28" data-postop="-13"></span>
+            <span data-posleft="-28" data-postop="-7"></span>
+            <span data-posleft="-28" data-postop="2"></span>
+            <span data-posleft="-28" data-postop="5"></span>
+            <span data-posleft="-28" data-postop="11"></span>
+            <span data-posleft="-28" data-postop="17"></span>
+            <span data-posleft="-28" data-postop="20"></span>
+            <span data-posleft="-28" data-postop="23"></span>
+            <span data-posleft="-28" data-postop="29"></span>
+            <span data-posleft="-28" data-postop="32"></span>
+            <span data-posleft="-28" data-postop="35"></span>
+            <span data-posleft="-28" data-postop="38"></span>
+            <span data-posleft="-28" data-postop="41"></span>
+            <span data-posleft="-28" data-postop="62"></span>
+            <span data-posleft="-28" data-postop="74"></span>
+            <span data-posleft="-28" data-postop="80"></span>
+            <span data-posleft="-25" data-postop="-94"></span>
+            <span data-posleft="-25" data-postop="-73"></span>
+            <span data-posleft="-25" data-postop="-70"></span>
+            <span data-posleft="-25" data-postop="-64"></span>
+            <span data-posleft="-25" data-postop="-58"></span>
+            <span data-posleft="-25" data-postop="-52"></span>
+            <span data-posleft="-25" data-postop="-46"></span>
+            <span data-posleft="-25" data-postop="-43"></span>
+            <span data-posleft="-25" data-postop="-28"></span>
+            <span data-posleft="-25" data-postop="-25"></span>
+            <span data-posleft="-25" data-postop="-22"></span>
+            <span data-posleft="-25" data-postop="-13"></span>
+            <span data-posleft="-25" data-postop="2"></span>
+            <span data-posleft="-25" data-postop="8"></span>
+            <span data-posleft="-25" data-postop="14"></span>
+            <span data-posleft="-25" data-postop="17"></span>
+            <span data-posleft="-25" data-postop="20"></span>
+            <span data-posleft="-25" data-postop="23"></span>
+            <span data-posleft="-25" data-postop="38"></span>
+            <span data-posleft="-25" data-postop="41"></span>
+            <span data-posleft="-25" data-postop="44"></span>
+            <span data-posleft="-25" data-postop="50"></span>
+            <span data-posleft="-25" data-postop="56"></span>
+            <span data-posleft="-25" data-postop="59"></span>
+            <span data-posleft="-25" data-postop="68"></span>
+            <span data-posleft="-25" data-postop="83"></span>
+            <span data-posleft="-25" data-postop="95"></span>
+            <span data-posleft="-22" data-postop="-94"></span>
+            <span data-posleft="-22" data-postop="-82"></span>
+            <span data-posleft="-22" data-postop="-70"></span>
+            <span data-posleft="-22" data-postop="-67"></span>
+            <span data-posleft="-22" data-postop="-64"></span>
+            <span data-posleft="-22" data-postop="-58"></span>
+            <span data-posleft="-22" data-postop="-52"></span>
+            <span data-posleft="-22" data-postop="-49"></span>
+            <span data-posleft="-22" data-postop="-46"></span>
+            <span data-posleft="-22" data-postop="-37"></span>
+            <span data-posleft="-22" data-postop="-31"></span>
+            <span data-posleft="-22" data-postop="-28"></span>
+            <span data-posleft="-22" data-postop="-19"></span>
+            <span data-posleft="-22" data-postop="-16"></span>
+            <span data-posleft="-22" data-postop="-10"></span>
+            <span data-posleft="-22" data-postop="-7"></span>
+            <span data-posleft="-22" data-postop="-4"></span>
+            <span data-posleft="-22" data-postop="-1"></span>
+            <span data-posleft="-22" data-postop="2"></span>
+            <span data-posleft="-22" data-postop="5"></span>
+            <span data-posleft="-22" data-postop="11"></span>
+            <span data-posleft="-22" data-postop="14"></span>
+            <span data-posleft="-22" data-postop="17"></span>
+            <span data-posleft="-22" data-postop="20"></span>
+            <span data-posleft="-22" data-postop="26"></span>
+            <span data-posleft="-22" data-postop="29"></span>
+            <span data-posleft="-22" data-postop="32"></span>
+            <span data-posleft="-22" data-postop="47"></span>
+            <span data-posleft="-22" data-postop="53"></span>
+            <span data-posleft="-22" data-postop="56"></span>
+            <span data-posleft="-22" data-postop="62"></span>
+            <span data-posleft="-22" data-postop="65"></span>
+            <span data-posleft="-22" data-postop="68"></span>
+            <span data-posleft="-22" data-postop="77"></span>
+            <span data-posleft="-19" data-postop="-94"></span>
+            <span data-posleft="-19" data-postop="-88"></span>
+            <span data-posleft="-19" data-postop="-82"></span>
+            <span data-posleft="-19" data-postop="-67"></span>
+            <span data-posleft="-19" data-postop="-64"></span>
+            <span data-posleft="-19" data-postop="-55"></span>
+            <span data-posleft="-19" data-postop="-52"></span>
+            <span data-posleft="-19" data-postop="-46"></span>
+            <span data-posleft="-19" data-postop="-31"></span>
+            <span data-posleft="-19" data-postop="-28"></span>
+            <span data-posleft="-19" data-postop="-22"></span>
+            <span data-posleft="-19" data-postop="-19"></span>
+            <span data-posleft="-19" data-postop="-13"></span>
+            <span data-posleft="-19" data-postop="-10"></span>
+            <span data-posleft="-19" data-postop="-7"></span>
+            <span data-posleft="-19" data-postop="8"></span>
+            <span data-posleft="-19" data-postop="14"></span>
+            <span data-posleft="-19" data-postop="17"></span>
+            <span data-posleft="-19" data-postop="23"></span>
+            <span data-posleft="-19" data-postop="26"></span>
+            <span data-posleft="-19" data-postop="29"></span>
+            <span data-posleft="-19" data-postop="38"></span>
+            <span data-posleft="-19" data-postop="41"></span>
+            <span data-posleft="-19" data-postop="44"></span>
+            <span data-posleft="-19" data-postop="56"></span>
+            <span data-posleft="-19" data-postop="59"></span>
+            <span data-posleft="-19" data-postop="65"></span>
+            <span data-posleft="-19" data-postop="71"></span>
+            <span data-posleft="-19" data-postop="86"></span>
+            <span data-posleft="-19" data-postop="89"></span>
+            <span data-posleft="-19" data-postop="98"></span>
+            <span data-posleft="-16" data-postop="-100"></span>
+            <span data-posleft="-16" data-postop="-82"></span>
+            <span data-posleft="-16" data-postop="-76"></span>
+            <span data-posleft="-16" data-postop="-70"></span>
+            <span data-posleft="-16" data-postop="-67"></span>
+            <span data-posleft="-16" data-postop="-64"></span>
+            <span data-posleft="-16" data-postop="-49"></span>
+            <span data-posleft="-16" data-postop="-46"></span>
+            <span data-posleft="-16" data-postop="-43"></span>
+            <span data-posleft="-16" data-postop="-40"></span>
+            <span data-posleft="-16" data-postop="-37"></span>
+            <span data-posleft="-16" data-postop="-31"></span>
+            <span data-posleft="-16" data-postop="-10"></span>
+            <span data-posleft="-16" data-postop="-7"></span>
+            <span data-posleft="-16" data-postop="-4"></span>
+            <span data-posleft="-16" data-postop="5"></span>
+            <span data-posleft="-16" data-postop="8"></span>
+            <span data-posleft="-16" data-postop="11"></span>
+            <span data-posleft="-16" data-postop="14"></span>
+            <span data-posleft="-16" data-postop="20"></span>
+            <span data-posleft="-16" data-postop="29"></span>
+            <span data-posleft="-16" data-postop="35"></span>
+            <span data-posleft="-16" data-postop="38"></span>
+            <span data-posleft="-16" data-postop="44"></span>
+            <span data-posleft="-16" data-postop="47"></span>
+            <span data-posleft="-16" data-postop="59"></span>
+            <span data-posleft="-16" data-postop="62"></span>
+            <span data-posleft="-16" data-postop="68"></span>
+            <span data-posleft="-16" data-postop="77"></span>
+            <span data-posleft="-16" data-postop="83"></span>
+            <span data-posleft="-16" data-postop="86"></span>
+            <span data-posleft="-16" data-postop="92"></span>
+            <span data-posleft="-16" data-postop="98"></span>
+            <span data-posleft="-13" data-postop="-94"></span>
+            <span data-posleft="-13" data-postop="-91"></span>
+            <span data-posleft="-13" data-postop="-73"></span>
+            <span data-posleft="-13" data-postop="-58"></span>
+            <span data-posleft="-13" data-postop="-52"></span>
+            <span data-posleft="-13" data-postop="-34"></span>
+            <span data-posleft="-13" data-postop="-28"></span>
+            <span data-posleft="-13" data-postop="-25"></span>
+            <span data-posleft="-13" data-postop="-22"></span>
+            <span data-posleft="-13" data-postop="-16"></span>
+            <span data-posleft="-13" data-postop="-7"></span>
+            <span data-posleft="-13" data-postop="-4"></span>
+            <span data-posleft="-13" data-postop="2"></span>
+            <span data-posleft="-13" data-postop="5"></span>
+            <span data-posleft="-13" data-postop="11"></span>
+            <span data-posleft="-13" data-postop="14"></span>
+            <span data-posleft="-13" data-postop="17"></span>
+            <span data-posleft="-13" data-postop="23"></span>
+            <span data-posleft="-13" data-postop="29"></span>
+            <span data-posleft="-13" data-postop="44"></span>
+            <span data-posleft="-13" data-postop="50"></span>
+            <span data-posleft="-13" data-postop="59"></span>
+            <span data-posleft="-13" data-postop="62"></span>
+            <span data-posleft="-13" data-postop="68"></span>
+            <span data-posleft="-13" data-postop="74"></span>
+            <span data-posleft="-13" data-postop="77"></span>
+            <span data-posleft="-13" data-postop="80"></span>
+            <span data-posleft="-13" data-postop="89"></span>
+            <span data-posleft="-13" data-postop="98"></span>
+            <span data-posleft="-10" data-postop="-85"></span>
+            <span data-posleft="-10" data-postop="-73"></span>
+            <span data-posleft="-10" data-postop="-52"></span>
+            <span data-posleft="-10" data-postop="-49"></span>
+            <span data-posleft="-10" data-postop="-40"></span>
+            <span data-posleft="-10" data-postop="-37"></span>
+            <span data-posleft="-10" data-postop="-31"></span>
+            <span data-posleft="-10" data-postop="-28"></span>
+            <span data-posleft="-10" data-postop="-16"></span>
+            <span data-posleft="-10" data-postop="-10"></span>
+            <span data-posleft="-10" data-postop="-7"></span>
+            <span data-posleft="-10" data-postop="-4"></span>
+            <span data-posleft="-10" data-postop="-1"></span>
+            <span data-posleft="-10" data-postop="2"></span>
+            <span data-posleft="-10" data-postop="5"></span>
+            <span data-posleft="-10" data-postop="11"></span>
+            <span data-posleft="-10" data-postop="14"></span>
+            <span data-posleft="-10" data-postop="17"></span>
+            <span data-posleft="-10" data-postop="26"></span>
+            <span data-posleft="-10" data-postop="29"></span>
+            <span data-posleft="-10" data-postop="32"></span>
+            <span data-posleft="-10" data-postop="35"></span>
+            <span data-posleft="-10" data-postop="41"></span>
+            <span data-posleft="-10" data-postop="44"></span>
+            <span data-posleft="-10" data-postop="53"></span>
+            <span data-posleft="-10" data-postop="56"></span>
+            <span data-posleft="-10" data-postop="62"></span>
+            <span data-posleft="-10" data-postop="71"></span>
+            <span data-posleft="-10" data-postop="83"></span>
+            <span data-posleft="-7" data-postop="-100"></span>
+            <span data-posleft="-7" data-postop="-97"></span>
+            <span data-posleft="-7" data-postop="-94"></span>
+            <span data-posleft="-7" data-postop="-82"></span>
+            <span data-posleft="-7" data-postop="-64"></span>
+            <span data-posleft="-7" data-postop="-61"></span>
+            <span data-posleft="-7" data-postop="-58"></span>
+            <span data-posleft="-7" data-postop="-49"></span>
+            <span data-posleft="-7" data-postop="-43"></span>
+            <span data-posleft="-7" data-postop="-40"></span>
+            <span data-posleft="-7" data-postop="-37"></span>
+            <span data-posleft="-7" data-postop="-34"></span>
+            <span data-posleft="-7" data-postop="-28"></span>
+            <span data-posleft="-7" data-postop="-25"></span>
+            <span data-posleft="-7" data-postop="-22"></span>
+            <span data-posleft="-7" data-postop="-19"></span>
+            <span data-posleft="-7" data-postop="-13"></span>
+            <span data-posleft="-7" data-postop="-7"></span>
+            <span data-posleft="-7" data-postop="-4"></span>
+            <span data-posleft="-7" data-postop="-1"></span>
+            <span data-posleft="-7" data-postop="2"></span>
+            <span data-posleft="-7" data-postop="11"></span>
+            <span data-posleft="-7" data-postop="14"></span>
+            <span data-posleft="-7" data-postop="17"></span>
+            <span data-posleft="-7" data-postop="20"></span>
+            <span data-posleft="-7" data-postop="23"></span>
+            <span data-posleft="-7" data-postop="29"></span>
+            <span data-posleft="-7" data-postop="32"></span>
+            <span data-posleft="-7" data-postop="38"></span>
+            <span data-posleft="-7" data-postop="41"></span>
+            <span data-posleft="-7" data-postop="44"></span>
+            <span data-posleft="-7" data-postop="47"></span>
+            <span data-posleft="-7" data-postop="53"></span>
+            <span data-posleft="-7" data-postop="62"></span>
+            <span data-posleft="-7" data-postop="80"></span>
+            <span data-posleft="-7" data-postop="95"></span>
+            <span data-posleft="-4" data-postop="-94"></span>
+            <span data-posleft="-4" data-postop="-82"></span>
+            <span data-posleft="-4" data-postop="-70"></span>
+            <span data-posleft="-4" data-postop="-67"></span>
+            <span data-posleft="-4" data-postop="-58"></span>
+            <span data-posleft="-4" data-postop="-52"></span>
+            <span data-posleft="-4" data-postop="-31"></span>
+            <span data-posleft="-4" data-postop="-28"></span>
+            <span data-posleft="-4" data-postop="-25"></span>
+            <span data-posleft="-4" data-postop="-22"></span>
+            <span data-posleft="-4" data-postop="-19"></span>
+            <span data-posleft="-4" data-postop="-13"></span>
+            <span data-posleft="-4" data-postop="-10"></span>
+            <span data-posleft="-4" data-postop="-4"></span>
+            <span data-posleft="-4" data-postop="-1"></span>
+            <span data-posleft="-4" data-postop="2"></span>
+            <span data-posleft="-4" data-postop="5"></span>
+            <span data-posleft="-4" data-postop="8"></span>
+            <span data-posleft="-4" data-postop="17"></span>
+            <span data-posleft="-4" data-postop="20"></span>
+            <span data-posleft="-4" data-postop="23"></span>
+            <span data-posleft="-4" data-postop="26"></span>
+            <span data-posleft="-4" data-postop="29"></span>
+            <span data-posleft="-4" data-postop="32"></span>
+            <span data-posleft="-4" data-postop="35"></span>
+            <span data-posleft="-4" data-postop="38"></span>
+            <span data-posleft="-4" data-postop="41"></span>
+            <span data-posleft="-4" data-postop="71"></span>
+            <span data-posleft="-4" data-postop="74"></span>
+            <span data-posleft="-4" data-postop="83"></span>
+            <span data-posleft="-4" data-postop="92"></span>
+            <span data-posleft="-1" data-postop="-91"></span>
+            <span data-posleft="-1" data-postop="-88"></span>
+            <span data-posleft="-1" data-postop="-73"></span>
+            <span data-posleft="-1" data-postop="-61"></span>
+            <span data-posleft="-1" data-postop="-55"></span>
+            <span data-posleft="-1" data-postop="-43"></span>
+            <span data-posleft="-1" data-postop="-40"></span>
+            <span data-posleft="-1" data-postop="-34"></span>
+            <span data-posleft="-1" data-postop="-28"></span>
+            <span data-posleft="-1" data-postop="-25"></span>
+            <span data-posleft="-1" data-postop="-22"></span>
+            <span data-posleft="-1" data-postop="-19"></span>
+            <span data-posleft="-1" data-postop="-16"></span>
+            <span data-posleft="-1" data-postop="-13"></span>
+            <span data-posleft="-1" data-postop="-10"></span>
+            <span data-posleft="-1" data-postop="-4"></span>
+            <span data-posleft="-1" data-postop="-1"></span>
+            <span data-posleft="-1" data-postop="2"></span>
+            <span data-posleft="-1" data-postop="5"></span>
+            <span data-posleft="-1" data-postop="11"></span>
+            <span data-posleft="-1" data-postop="14"></span>
+            <span data-posleft="-1" data-postop="17"></span>
+            <span data-posleft="-1" data-postop="23"></span>
+            <span data-posleft="-1" data-postop="26"></span>
+            <span data-posleft="-1" data-postop="29"></span>
+            <span data-posleft="-1" data-postop="35"></span>
+            <span data-posleft="-1" data-postop="38"></span>
+            <span data-posleft="-1" data-postop="41"></span>
+            <span data-posleft="-1" data-postop="44"></span>
+            <span data-posleft="-1" data-postop="47"></span>
+            <span data-posleft="-1" data-postop="50"></span>
+            <span data-posleft="-1" data-postop="56"></span>
+            <span data-posleft="-1" data-postop="59"></span>
+            <span data-posleft="-1" data-postop="83"></span>
+            <span data-posleft="-1" data-postop="89"></span>
+            <span data-posleft="2" data-postop="-85"></span>
+            <span data-posleft="2" data-postop="-79"></span>
+            <span data-posleft="2" data-postop="-73"></span>
+            <span data-posleft="2" data-postop="-58"></span>
+            <span data-posleft="2" data-postop="-49"></span>
+            <span data-posleft="2" data-postop="-28"></span>
+            <span data-posleft="2" data-postop="-25"></span>
+            <span data-posleft="2" data-postop="-22"></span>
+            <span data-posleft="2" data-postop="-19"></span>
+            <span data-posleft="2" data-postop="-16"></span>
+            <span data-posleft="2" data-postop="-13"></span>
+            <span data-posleft="2" data-postop="-7"></span>
+            <span data-posleft="2" data-postop="-4"></span>
+            <span data-posleft="2" data-postop="-1"></span>
+            <span data-posleft="2" data-postop="2"></span>
+            <span data-posleft="2" data-postop="5"></span>
+            <span data-posleft="2" data-postop="8"></span>
+            <span data-posleft="2" data-postop="11"></span>
+            <span data-posleft="2" data-postop="14"></span>
+            <span data-posleft="2" data-postop="20"></span>
+            <span data-posleft="2" data-postop="23"></span>
+            <span data-posleft="2" data-postop="26"></span>
+            <span data-posleft="2" data-postop="32"></span>
+            <span data-posleft="2" data-postop="35"></span>
+            <span data-posleft="2" data-postop="41"></span>
+            <span data-posleft="2" data-postop="44"></span>
+            <span data-posleft="2" data-postop="53"></span>
+            <span data-posleft="2" data-postop="71"></span>
+            <span data-posleft="2" data-postop="77"></span>
+            <span data-posleft="2" data-postop="86"></span>
+            <span data-posleft="5" data-postop="-91"></span>
+            <span data-posleft="5" data-postop="-64"></span>
+            <span data-posleft="5" data-postop="-49"></span>
+            <span data-posleft="5" data-postop="-43"></span>
+            <span data-posleft="5" data-postop="-31"></span>
+            <span data-posleft="5" data-postop="-28"></span>
+            <span data-posleft="5" data-postop="-25"></span>
+            <span data-posleft="5" data-postop="-22"></span>
+            <span data-posleft="5" data-postop="-19"></span>
+            <span data-posleft="5" data-postop="-16"></span>
+            <span data-posleft="5" data-postop="-13"></span>
+            <span data-posleft="5" data-postop="-10"></span>
+            <span data-posleft="5" data-postop="-7"></span>
+            <span data-posleft="5" data-postop="-4"></span>
+            <span data-posleft="5" data-postop="-1"></span>
+            <span data-posleft="5" data-postop="2"></span>
+            <span data-posleft="5" data-postop="11"></span>
+            <span data-posleft="5" data-postop="14"></span>
+            <span data-posleft="5" data-postop="20"></span>
+            <span data-posleft="5" data-postop="23"></span>
+            <span data-posleft="5" data-postop="26"></span>
+            <span data-posleft="5" data-postop="29"></span>
+            <span data-posleft="5" data-postop="35"></span>
+            <span data-posleft="5" data-postop="44"></span>
+            <span data-posleft="5" data-postop="53"></span>
+            <span data-posleft="5" data-postop="62"></span>
+            <span data-posleft="5" data-postop="77"></span>
+            <span data-posleft="5" data-postop="92"></span>
+            <span data-posleft="5" data-postop="95"></span>
+            <span data-posleft="8" data-postop="-94"></span>
+            <span data-posleft="8" data-postop="-88"></span>
+            <span data-posleft="8" data-postop="-64"></span>
+            <span data-posleft="8" data-postop="-58"></span>
+            <span data-posleft="8" data-postop="-55"></span>
+            <span data-posleft="8" data-postop="-52"></span>
+            <span data-posleft="8" data-postop="-46"></span>
+            <span data-posleft="8" data-postop="-43"></span>
+            <span data-posleft="8" data-postop="-37"></span>
+            <span data-posleft="8" data-postop="-25"></span>
+            <span data-posleft="8" data-postop="-22"></span>
+            <span data-posleft="8" data-postop="-16"></span>
+            <span data-posleft="8" data-postop="-13"></span>
+            <span data-posleft="8" data-postop="-7"></span>
+            <span data-posleft="8" data-postop="-4"></span>
+            <span data-posleft="8" data-postop="-1"></span>
+            <span data-posleft="8" data-postop="2"></span>
+            <span data-posleft="8" data-postop="5"></span>
+            <span data-posleft="8" data-postop="8"></span>
+            <span data-posleft="8" data-postop="11"></span>
+            <span data-posleft="8" data-postop="14"></span>
+            <span data-posleft="8" data-postop="17"></span>
+            <span data-posleft="8" data-postop="20"></span>
+            <span data-posleft="8" data-postop="26"></span>
+            <span data-posleft="8" data-postop="32"></span>
+            <span data-posleft="8" data-postop="35"></span>
+            <span data-posleft="8" data-postop="38"></span>
+            <span data-posleft="8" data-postop="47"></span>
+            <span data-posleft="8" data-postop="53"></span>
+            <span data-posleft="8" data-postop="56"></span>
+            <span data-posleft="8" data-postop="65"></span>
+            <span data-posleft="8" data-postop="68"></span>
+            <span data-posleft="8" data-postop="86"></span>
+            <span data-posleft="8" data-postop="95"></span>
+            <span data-posleft="11" data-postop="-97"></span>
+            <span data-posleft="11" data-postop="-79"></span>
+            <span data-posleft="11" data-postop="-61"></span>
+            <span data-posleft="11" data-postop="-55"></span>
+            <span data-posleft="11" data-postop="-40"></span>
+            <span data-posleft="11" data-postop="-37"></span>
+            <span data-posleft="11" data-postop="-34"></span>
+            <span data-posleft="11" data-postop="-28"></span>
+            <span data-posleft="11" data-postop="-22"></span>
+            <span data-posleft="11" data-postop="-16"></span>
+            <span data-posleft="11" data-postop="-10"></span>
+            <span data-posleft="11" data-postop="-7"></span>
+            <span data-posleft="11" data-postop="2"></span>
+            <span data-posleft="11" data-postop="8"></span>
+            <span data-posleft="11" data-postop="11"></span>
+            <span data-posleft="11" data-postop="20"></span>
+            <span data-posleft="11" data-postop="23"></span>
+            <span data-posleft="11" data-postop="26"></span>
+            <span data-posleft="11" data-postop="29"></span>
+            <span data-posleft="11" data-postop="32"></span>
+            <span data-posleft="11" data-postop="44"></span>
+            <span data-posleft="11" data-postop="56"></span>
+            <span data-posleft="11" data-postop="59"></span>
+            <span data-posleft="11" data-postop="71"></span>
+            <span data-posleft="11" data-postop="77"></span>
+            <span data-posleft="14" data-postop="-85"></span>
+            <span data-posleft="14" data-postop="-82"></span>
+            <span data-posleft="14" data-postop="-79"></span>
+            <span data-posleft="14" data-postop="-76"></span>
+            <span data-posleft="14" data-postop="-64"></span>
+            <span data-posleft="14" data-postop="-58"></span>
+            <span data-posleft="14" data-postop="-43"></span>
+            <span data-posleft="14" data-postop="-40"></span>
+            <span data-posleft="14" data-postop="-37"></span>
+            <span data-posleft="14" data-postop="-25"></span>
+            <span data-posleft="14" data-postop="-13"></span>
+            <span data-posleft="14" data-postop="-7"></span>
+            <span data-posleft="14" data-postop="-4"></span>
+            <span data-posleft="14" data-postop="5"></span>
+            <span data-posleft="14" data-postop="11"></span>
+            <span data-posleft="14" data-postop="14"></span>
+            <span data-posleft="14" data-postop="17"></span>
+            <span data-posleft="14" data-postop="20"></span>
+            <span data-posleft="14" data-postop="23"></span>
+            <span data-posleft="14" data-postop="26"></span>
+            <span data-posleft="14" data-postop="35"></span>
+            <span data-posleft="14" data-postop="38"></span>
+            <span data-posleft="14" data-postop="50"></span>
+            <span data-posleft="14" data-postop="53"></span>
+            <span data-posleft="14" data-postop="56"></span>
+            <span data-posleft="14" data-postop="62"></span>
+            <span data-posleft="14" data-postop="65"></span>
+            <span data-posleft="14" data-postop="71"></span>
+            <span data-posleft="14" data-postop="74"></span>
+            <span data-posleft="14" data-postop="80"></span>
+            <span data-posleft="14" data-postop="92"></span>
+            <span data-posleft="14" data-postop="95"></span>
+            <span data-posleft="17" data-postop="-94"></span>
+            <span data-posleft="17" data-postop="-79"></span>
+            <span data-posleft="17" data-postop="-76"></span>
+            <span data-posleft="17" data-postop="-58"></span>
+            <span data-posleft="17" data-postop="-55"></span>
+            <span data-posleft="17" data-postop="-52"></span>
+            <span data-posleft="17" data-postop="-31"></span>
+            <span data-posleft="17" data-postop="-28"></span>
+            <span data-posleft="17" data-postop="-22"></span>
+            <span data-posleft="17" data-postop="-19"></span>
+            <span data-posleft="17" data-postop="-16"></span>
+            <span data-posleft="17" data-postop="-7"></span>
+            <span data-posleft="17" data-postop="-4"></span>
+            <span data-posleft="17" data-postop="-1"></span>
+            <span data-posleft="17" data-postop="2"></span>
+            <span data-posleft="17" data-postop="5"></span>
+            <span data-posleft="17" data-postop="8"></span>
+            <span data-posleft="17" data-postop="17"></span>
+            <span data-posleft="17" data-postop="20"></span>
+            <span data-posleft="17" data-postop="32"></span>
+            <span data-posleft="17" data-postop="47"></span>
+            <span data-posleft="17" data-postop="50"></span>
+            <span data-posleft="17" data-postop="53"></span>
+            <span data-posleft="17" data-postop="56"></span>
+            <span data-posleft="17" data-postop="71"></span>
+            <span data-posleft="17" data-postop="74"></span>
+            <span data-posleft="17" data-postop="80"></span>
+            <span data-posleft="17" data-postop="83"></span>
+            <span data-posleft="17" data-postop="98"></span>
+            <span data-posleft="20" data-postop="-88"></span>
+            <span data-posleft="20" data-postop="-79"></span>
+            <span data-posleft="20" data-postop="-73"></span>
+            <span data-posleft="20" data-postop="-70"></span>
+            <span data-posleft="20" data-postop="-64"></span>
+            <span data-posleft="20" data-postop="-55"></span>
+            <span data-posleft="20" data-postop="-49"></span>
+            <span data-posleft="20" data-postop="-43"></span>
+            <span data-posleft="20" data-postop="-40"></span>
+            <span data-posleft="20" data-postop="-28"></span>
+            <span data-posleft="20" data-postop="-25"></span>
+            <span data-posleft="20" data-postop="-13"></span>
+            <span data-posleft="20" data-postop="-7"></span>
+            <span data-posleft="20" data-postop="2"></span>
+            <span data-posleft="20" data-postop="5"></span>
+            <span data-posleft="20" data-postop="8"></span>
+            <span data-posleft="20" data-postop="11"></span>
+            <span data-posleft="20" data-postop="17"></span>
+            <span data-posleft="20" data-postop="26"></span>
+            <span data-posleft="20" data-postop="29"></span>
+            <span data-posleft="20" data-postop="35"></span>
+            <span data-posleft="20" data-postop="38"></span>
+            <span data-posleft="20" data-postop="41"></span>
+            <span data-posleft="20" data-postop="53"></span>
+            <span data-posleft="20" data-postop="56"></span>
+            <span data-posleft="20" data-postop="59"></span>
+            <span data-posleft="20" data-postop="65"></span>
+            <span data-posleft="20" data-postop="77"></span>
+            <span data-posleft="20" data-postop="92"></span>
+            <span data-posleft="23" data-postop="-85"></span>
+            <span data-posleft="23" data-postop="-70"></span>
+            <span data-posleft="23" data-postop="-64"></span>
+            <span data-posleft="23" data-postop="-61"></span>
+            <span data-posleft="23" data-postop="-49"></span>
+            <span data-posleft="23" data-postop="-46"></span>
+            <span data-posleft="23" data-postop="-40"></span>
+            <span data-posleft="23" data-postop="-28"></span>
+            <span data-posleft="23" data-postop="-22"></span>
+            <span data-posleft="23" data-postop="-16"></span>
+            <span data-posleft="23" data-postop="-13"></span>
+            <span data-posleft="23" data-postop="-10"></span>
+            <span data-posleft="23" data-postop="-4"></span>
+            <span data-posleft="23" data-postop="2"></span>
+            <span data-posleft="23" data-postop="5"></span>
+            <span data-posleft="23" data-postop="8"></span>
+            <span data-posleft="23" data-postop="14"></span>
+            <span data-posleft="23" data-postop="17"></span>
+            <span data-posleft="23" data-postop="23"></span>
+            <span data-posleft="23" data-postop="38"></span>
+            <span data-posleft="23" data-postop="44"></span>
+            <span data-posleft="23" data-postop="47"></span>
+            <span data-posleft="23" data-postop="56"></span>
+            <span data-posleft="23" data-postop="65"></span>
+            <span data-posleft="23" data-postop="71"></span>
+            <span data-posleft="23" data-postop="80"></span>
+            <span data-posleft="23" data-postop="83"></span>
+            <span data-posleft="23" data-postop="95"></span>
+            <span data-posleft="26" data-postop="-97"></span>
+            <span data-posleft="26" data-postop="-70"></span>
+            <span data-posleft="26" data-postop="-58"></span>
+            <span data-posleft="26" data-postop="-52"></span>
+            <span data-posleft="26" data-postop="-46"></span>
+            <span data-posleft="26" data-postop="-37"></span>
+            <span data-posleft="26" data-postop="-31"></span>
+            <span data-posleft="26" data-postop="-28"></span>
+            <span data-posleft="26" data-postop="-4"></span>
+            <span data-posleft="26" data-postop="2"></span>
+            <span data-posleft="26" data-postop="5"></span>
+            <span data-posleft="26" data-postop="8"></span>
+            <span data-posleft="26" data-postop="14"></span>
+            <span data-posleft="26" data-postop="17"></span>
+            <span data-posleft="26" data-postop="29"></span>
+            <span data-posleft="26" data-postop="35"></span>
+            <span data-posleft="26" data-postop="44"></span>
+            <span data-posleft="26" data-postop="47"></span>
+            <span data-posleft="26" data-postop="50"></span>
+            <span data-posleft="26" data-postop="56"></span>
+            <span data-posleft="26" data-postop="59"></span>
+            <span data-posleft="26" data-postop="65"></span>
+            <span data-posleft="26" data-postop="86"></span>
+            <span data-posleft="26" data-postop="95"></span>
+            <span data-posleft="29" data-postop="-76"></span>
+            <span data-posleft="29" data-postop="-70"></span>
+            <span data-posleft="29" data-postop="-58"></span>
+            <span data-posleft="29" data-postop="-37"></span>
+            <span data-posleft="29" data-postop="-34"></span>
+            <span data-posleft="29" data-postop="-7"></span>
+            <span data-posleft="29" data-postop="-4"></span>
+            <span data-posleft="29" data-postop="35"></span>
+            <span data-posleft="29" data-postop="47"></span>
+            <span data-posleft="29" data-postop="50"></span>
+            <span data-posleft="29" data-postop="56"></span>
+            <span data-posleft="29" data-postop="68"></span>
+            <span data-posleft="29" data-postop="83"></span>
+            <span data-posleft="29" data-postop="92"></span>
+            <span data-posleft="32" data-postop="-94"></span>
+            <span data-posleft="32" data-postop="-73"></span>
+            <span data-posleft="32" data-postop="-61"></span>
+            <span data-posleft="32" data-postop="-58"></span>
+            <span data-posleft="32" data-postop="-43"></span>
+            <span data-posleft="32" data-postop="-37"></span>
+            <span data-posleft="32" data-postop="-31"></span>
+            <span data-posleft="32" data-postop="-19"></span>
+            <span data-posleft="32" data-postop="-13"></span>
+            <span data-posleft="32" data-postop="-10"></span>
+            <span data-posleft="32" data-postop="-7"></span>
+            <span data-posleft="32" data-postop="-1"></span>
+            <span data-posleft="32" data-postop="2"></span>
+            <span data-posleft="32" data-postop="11"></span>
+            <span data-posleft="32" data-postop="14"></span>
+            <span data-posleft="32" data-postop="20"></span>
+            <span data-posleft="32" data-postop="23"></span>
+            <span data-posleft="32" data-postop="26"></span>
+            <span data-posleft="32" data-postop="32"></span>
+            <span data-posleft="32" data-postop="41"></span>
+            <span data-posleft="32" data-postop="47"></span>
+            <span data-posleft="32" data-postop="56"></span>
+            <span data-posleft="32" data-postop="65"></span>
+            <span data-posleft="32" data-postop="83"></span>
+            <span data-posleft="35" data-postop="-94"></span>
+            <span data-posleft="35" data-postop="-76"></span>
+            <span data-posleft="35" data-postop="-73"></span>
+            <span data-posleft="35" data-postop="-67"></span>
+            <span data-posleft="35" data-postop="-52"></span>
+            <span data-posleft="35" data-postop="-46"></span>
+            <span data-posleft="35" data-postop="-31"></span>
+            <span data-posleft="35" data-postop="-22"></span>
+            <span data-posleft="35" data-postop="-19"></span>
+            <span data-posleft="35" data-postop="-13"></span>
+            <span data-posleft="35" data-postop="-1"></span>
+            <span data-posleft="35" data-postop="2"></span>
+            <span data-posleft="35" data-postop="5"></span>
+            <span data-posleft="35" data-postop="8"></span>
+            <span data-posleft="35" data-postop="11"></span>
+            <span data-posleft="35" data-postop="14"></span>
+            <span data-posleft="35" data-postop="20"></span>
+            <span data-posleft="35" data-postop="26"></span>
+            <span data-posleft="35" data-postop="32"></span>
+            <span data-posleft="35" data-postop="35"></span>
+            <span data-posleft="35" data-postop="56"></span>
+            <span data-posleft="35" data-postop="68"></span>
+            <span data-posleft="35" data-postop="71"></span>
+            <span data-posleft="35" data-postop="83"></span>
+            <span data-posleft="35" data-postop="92"></span>
+            <span data-posleft="38" data-postop="-76"></span>
+            <span data-posleft="38" data-postop="-70"></span>
+            <span data-posleft="38" data-postop="-61"></span>
+            <span data-posleft="38" data-postop="-58"></span>
+            <span data-posleft="38" data-postop="-52"></span>
+            <span data-posleft="38" data-postop="-37"></span>
+            <span data-posleft="38" data-postop="-34"></span>
+            <span data-posleft="38" data-postop="-25"></span>
+            <span data-posleft="38" data-postop="-22"></span>
+            <span data-posleft="38" data-postop="-13"></span>
+            <span data-posleft="38" data-postop="-4"></span>
+            <span data-posleft="38" data-postop="2"></span>
+            <span data-posleft="38" data-postop="5"></span>
+            <span data-posleft="38" data-postop="8"></span>
+            <span data-posleft="38" data-postop="11"></span>
+            <span data-posleft="38" data-postop="14"></span>
+            <span data-posleft="38" data-postop="20"></span>
+            <span data-posleft="38" data-postop="23"></span>
+            <span data-posleft="38" data-postop="26"></span>
+            <span data-posleft="38" data-postop="29"></span>
+            <span data-posleft="38" data-postop="41"></span>
+            <span data-posleft="38" data-postop="62"></span>
+            <span data-posleft="41" data-postop="-79"></span>
+            <span data-posleft="41" data-postop="-76"></span>
+            <span data-posleft="41" data-postop="-64"></span>
+            <span data-posleft="41" data-postop="-61"></span>
+            <span data-posleft="41" data-postop="-31"></span>
+            <span data-posleft="41" data-postop="-28"></span>
+            <span data-posleft="41" data-postop="-25"></span>
+            <span data-posleft="41" data-postop="-22"></span>
+            <span data-posleft="41" data-postop="-19"></span>
+            <span data-posleft="41" data-postop="-16"></span>
+            <span data-posleft="41" data-postop="-10"></span>
+            <span data-posleft="41" data-postop="-7"></span>
+            <span data-posleft="41" data-postop="8"></span>
+            <span data-posleft="41" data-postop="11"></span>
+            <span data-posleft="41" data-postop="14"></span>
+            <span data-posleft="41" data-postop="17"></span>
+            <span data-posleft="41" data-postop="20"></span>
+            <span data-posleft="41" data-postop="23"></span>
+            <span data-posleft="41" data-postop="53"></span>
+            <span data-posleft="41" data-postop="59"></span>
+            <span data-posleft="41" data-postop="65"></span>
+            <span data-posleft="41" data-postop="77"></span>
+            <span data-posleft="41" data-postop="89"></span>
+            <span data-posleft="44" data-postop="-85"></span>
+            <span data-posleft="44" data-postop="-64"></span>
+            <span data-posleft="44" data-postop="-58"></span>
+            <span data-posleft="44" data-postop="-31"></span>
+            <span data-posleft="44" data-postop="-22"></span>
+            <span data-posleft="44" data-postop="-19"></span>
+            <span data-posleft="44" data-postop="-16"></span>
+            <span data-posleft="44" data-postop="-7"></span>
+            <span data-posleft="44" data-postop="-1"></span>
+            <span data-posleft="44" data-postop="5"></span>
+            <span data-posleft="44" data-postop="8"></span>
+            <span data-posleft="44" data-postop="23"></span>
+            <span data-posleft="44" data-postop="29"></span>
+            <span data-posleft="44" data-postop="38"></span>
+            <span data-posleft="44" data-postop="44"></span>
+            <span data-posleft="44" data-postop="50"></span>
+            <span data-posleft="44" data-postop="56"></span>
+            <span data-posleft="44" data-postop="59"></span>
+            <span data-posleft="44" data-postop="71"></span>
+            <span data-posleft="44" data-postop="74"></span>
+            <span data-posleft="44" data-postop="86"></span>
+            <span data-posleft="47" data-postop="-88"></span>
+            <span data-posleft="47" data-postop="-76"></span>
+            <span data-posleft="47" data-postop="-73"></span>
+            <span data-posleft="47" data-postop="-64"></span>
+            <span data-posleft="47" data-postop="-61"></span>
+            <span data-posleft="47" data-postop="-52"></span>
+            <span data-posleft="47" data-postop="-46"></span>
+            <span data-posleft="47" data-postop="-34"></span>
+            <span data-posleft="47" data-postop="-16"></span>
+            <span data-posleft="47" data-postop="-10"></span>
+            <span data-posleft="47" data-postop="-7"></span>
+            <span data-posleft="47" data-postop="-4"></span>
+            <span data-posleft="47" data-postop="-1"></span>
+            <span data-posleft="47" data-postop="2"></span>
+            <span data-posleft="47" data-postop="5"></span>
+            <span data-posleft="47" data-postop="11"></span>
+            <span data-posleft="47" data-postop="14"></span>
+            <span data-posleft="47" data-postop="17"></span>
+            <span data-posleft="47" data-postop="20"></span>
+            <span data-posleft="47" data-postop="26"></span>
+            <span data-posleft="47" data-postop="38"></span>
+            <span data-posleft="47" data-postop="41"></span>
+            <span data-posleft="47" data-postop="44"></span>
+            <span data-posleft="47" data-postop="53"></span>
+            <span data-posleft="47" data-postop="56"></span>
+            <span data-posleft="47" data-postop="59"></span>
+            <span data-posleft="47" data-postop="71"></span>
+            <span data-posleft="47" data-postop="74"></span>
+            <span data-posleft="47" data-postop="86"></span>
+            <span data-posleft="50" data-postop="-73"></span>
+            <span data-posleft="50" data-postop="-64"></span>
+            <span data-posleft="50" data-postop="-61"></span>
+            <span data-posleft="50" data-postop="-55"></span>
+            <span data-posleft="50" data-postop="-52"></span>
+            <span data-posleft="50" data-postop="-43"></span>
+            <span data-posleft="50" data-postop="-4"></span>
+            <span data-posleft="50" data-postop="2"></span>
+            <span data-posleft="50" data-postop="8"></span>
+            <span data-posleft="50" data-postop="14"></span>
+            <span data-posleft="50" data-postop="38"></span>
+            <span data-posleft="50" data-postop="41"></span>
+            <span data-posleft="50" data-postop="44"></span>
+            <span data-posleft="50" data-postop="50"></span>
+            <span data-posleft="50" data-postop="56"></span>
+            <span data-posleft="50" data-postop="62"></span>
+            <span data-posleft="50" data-postop="65"></span>
+            <span data-posleft="50" data-postop="68"></span>
+            <span data-posleft="53" data-postop="-73"></span>
+            <span data-posleft="53" data-postop="-70"></span>
+            <span data-posleft="53" data-postop="-67"></span>
+            <span data-posleft="53" data-postop="-61"></span>
+            <span data-posleft="53" data-postop="-58"></span>
+            <span data-posleft="53" data-postop="-55"></span>
+            <span data-posleft="53" data-postop="-46"></span>
+            <span data-posleft="53" data-postop="-19"></span>
+            <span data-posleft="53" data-postop="-10"></span>
+            <span data-posleft="53" data-postop="-7"></span>
+            <span data-posleft="53" data-postop="-1"></span>
+            <span data-posleft="53" data-postop="5"></span>
+            <span data-posleft="53" data-postop="8"></span>
+            <span data-posleft="53" data-postop="14"></span>
+            <span data-posleft="53" data-postop="17"></span>
+            <span data-posleft="53" data-postop="20"></span>
+            <span data-posleft="53" data-postop="62"></span>
+            <span data-posleft="53" data-postop="65"></span>
+            <span data-posleft="53" data-postop="68"></span>
+            <span data-posleft="53" data-postop="71"></span>
+            <span data-posleft="53" data-postop="80"></span>
+            <span data-posleft="56" data-postop="-79"></span>
+            <span data-posleft="56" data-postop="-70"></span>
+            <span data-posleft="56" data-postop="-58"></span>
+            <span data-posleft="56" data-postop="-55"></span>
+            <span data-posleft="56" data-postop="-52"></span>
+            <span data-posleft="56" data-postop="-49"></span>
+            <span data-posleft="56" data-postop="-40"></span>
+            <span data-posleft="56" data-postop="-34"></span>
+            <span data-posleft="56" data-postop="-31"></span>
+            <span data-posleft="56" data-postop="-28"></span>
+            <span data-posleft="56" data-postop="-25"></span>
+            <span data-posleft="56" data-postop="-22"></span>
+            <span data-posleft="56" data-postop="-16"></span>
+            <span data-posleft="56" data-postop="-13"></span>
+            <span data-posleft="56" data-postop="-10"></span>
+            <span data-posleft="56" data-postop="-7"></span>
+            <span data-posleft="56" data-postop="-4"></span>
+            <span data-posleft="56" data-postop="5"></span>
+            <span data-posleft="56" data-postop="11"></span>
+            <span data-posleft="56" data-postop="14"></span>
+            <span data-posleft="56" data-postop="20"></span>
+            <span data-posleft="56" data-postop="23"></span>
+            <span data-posleft="56" data-postop="26"></span>
+            <span data-posleft="56" data-postop="29"></span>
+            <span data-posleft="56" data-postop="35"></span>
+            <span data-posleft="56" data-postop="38"></span>
+            <span data-posleft="56" data-postop="41"></span>
+            <span data-posleft="56" data-postop="56"></span>
+            <span data-posleft="56" data-postop="62"></span>
+            <span data-posleft="56" data-postop="68"></span>
+            <span data-posleft="56" data-postop="71"></span>
+            <span data-posleft="56" data-postop="80"></span>
+            <span data-posleft="59" data-postop="-79"></span>
+            <span data-posleft="59" data-postop="-76"></span>
+            <span data-posleft="59" data-postop="-70"></span>
+            <span data-posleft="59" data-postop="-61"></span>
+            <span data-posleft="59" data-postop="-58"></span>
+            <span data-posleft="59" data-postop="-55"></span>
+            <span data-posleft="59" data-postop="-46"></span>
+            <span data-posleft="59" data-postop="-37"></span>
+            <span data-posleft="59" data-postop="-34"></span>
+            <span data-posleft="59" data-postop="-31"></span>
+            <span data-posleft="59" data-postop="-28"></span>
+            <span data-posleft="59" data-postop="-22"></span>
+            <span data-posleft="59" data-postop="-19"></span>
+            <span data-posleft="59" data-postop="-7"></span>
+            <span data-posleft="59" data-postop="-4"></span>
+            <span data-posleft="59" data-postop="-1"></span>
+            <span data-posleft="59" data-postop="2"></span>
+            <span data-posleft="59" data-postop="8"></span>
+            <span data-posleft="59" data-postop="20"></span>
+            <span data-posleft="59" data-postop="29"></span>
+            <span data-posleft="59" data-postop="32"></span>
+            <span data-posleft="59" data-postop="44"></span>
+            <span data-posleft="59" data-postop="59"></span>
+            <span data-posleft="62" data-postop="-67"></span>
+            <span data-posleft="62" data-postop="-64"></span>
+            <span data-posleft="62" data-postop="-58"></span>
+            <span data-posleft="62" data-postop="-55"></span>
+            <span data-posleft="62" data-postop="-52"></span>
+            <span data-posleft="62" data-postop="-43"></span>
+            <span data-posleft="62" data-postop="-40"></span>
+            <span data-posleft="62" data-postop="-37"></span>
+            <span data-posleft="62" data-postop="-34"></span>
+            <span data-posleft="62" data-postop="-10"></span>
+            <span data-posleft="62" data-postop="-4"></span>
+            <span data-posleft="62" data-postop="-1"></span>
+            <span data-posleft="62" data-postop="2"></span>
+            <span data-posleft="62" data-postop="8"></span>
+            <span data-posleft="62" data-postop="11"></span>
+            <span data-posleft="62" data-postop="14"></span>
+            <span data-posleft="62" data-postop="50"></span>
+            <span data-posleft="62" data-postop="59"></span>
+            <span data-posleft="62" data-postop="65"></span>
+            <span data-posleft="62" data-postop="71"></span>
+            <span data-posleft="65" data-postop="-73"></span>
+            <span data-posleft="65" data-postop="-67"></span>
+            <span data-posleft="65" data-postop="-58"></span>
+            <span data-posleft="65" data-postop="-43"></span>
+            <span data-posleft="65" data-postop="-37"></span>
+            <span data-posleft="65" data-postop="-28"></span>
+            <span data-posleft="65" data-postop="-25"></span>
+            <span data-posleft="65" data-postop="-16"></span>
+            <span data-posleft="65" data-postop="-4"></span>
+            <span data-posleft="65" data-postop="-1"></span>
+            <span data-posleft="65" data-postop="2"></span>
+            <span data-posleft="65" data-postop="8"></span>
+            <span data-posleft="65" data-postop="17"></span>
+            <span data-posleft="65" data-postop="20"></span>
+            <span data-posleft="65" data-postop="26"></span>
+            <span data-posleft="65" data-postop="32"></span>
+            <span data-posleft="65" data-postop="59"></span>
+            <span data-posleft="65" data-postop="62"></span>
+            <span data-posleft="65" data-postop="65"></span>
+            <span data-posleft="68" data-postop="-70"></span>
+            <span data-posleft="68" data-postop="-67"></span>
+            <span data-posleft="68" data-postop="-64"></span>
+            <span data-posleft="68" data-postop="-58"></span>
+            <span data-posleft="68" data-postop="-49"></span>
+            <span data-posleft="68" data-postop="-43"></span>
+            <span data-posleft="68" data-postop="-37"></span>
+            <span data-posleft="68" data-postop="-22"></span>
+            <span data-posleft="68" data-postop="-16"></span>
+            <span data-posleft="68" data-postop="-13"></span>
+            <span data-posleft="68" data-postop="-10"></span>
+            <span data-posleft="68" data-postop="-7"></span>
+            <span data-posleft="68" data-postop="-1"></span>
+            <span data-posleft="68" data-postop="8"></span>
+            <span data-posleft="68" data-postop="11"></span>
+            <span data-posleft="68" data-postop="17"></span>
+            <span data-posleft="68" data-postop="20"></span>
+            <span data-posleft="68" data-postop="32"></span>
+            <span data-posleft="68" data-postop="35"></span>
+            <span data-posleft="68" data-postop="38"></span>
+            <span data-posleft="68" data-postop="41"></span>
+            <span data-posleft="68" data-postop="44"></span>
+            <span data-posleft="68" data-postop="68"></span>
+            <span data-posleft="68" data-postop="71"></span>
+            <span data-posleft="71" data-postop="-70"></span>
+            <span data-posleft="71" data-postop="-52"></span>
+            <span data-posleft="71" data-postop="-34"></span>
+            <span data-posleft="71" data-postop="-28"></span>
+            <span data-posleft="71" data-postop="-25"></span>
+            <span data-posleft="71" data-postop="-19"></span>
+            <span data-posleft="71" data-postop="-13"></span>
+            <span data-posleft="71" data-postop="-7"></span>
+            <span data-posleft="71" data-postop="-1"></span>
+            <span data-posleft="71" data-postop="11"></span>
+            <span data-posleft="71" data-postop="14"></span>
+            <span data-posleft="71" data-postop="41"></span>
+            <span data-posleft="71" data-postop="56"></span>
+            <span data-posleft="74" data-postop="-55"></span>
+            <span data-posleft="74" data-postop="-52"></span>
+            <span data-posleft="74" data-postop="-22"></span>
+            <span data-posleft="74" data-postop="-19"></span>
+            <span data-posleft="74" data-postop="-16"></span>
+            <span data-posleft="74" data-postop="-10"></span>
+            <span data-posleft="74" data-postop="-7"></span>
+            <span data-posleft="74" data-postop="-1"></span>
+            <span data-posleft="74" data-postop="8"></span>
+            <span data-posleft="74" data-postop="11"></span>
+            <span data-posleft="74" data-postop="23"></span>
+            <span data-posleft="74" data-postop="29"></span>
+            <span data-posleft="74" data-postop="44"></span>
+            <span data-posleft="74" data-postop="56"></span>
+            <span data-posleft="74" data-postop="65"></span>
+            <span data-posleft="77" data-postop="-49"></span>
+            <span data-posleft="77" data-postop="-40"></span>
+            <span data-posleft="77" data-postop="-4"></span>
+            <span data-posleft="77" data-postop="5"></span>
+            <span data-posleft="77" data-postop="11"></span>
+            <span data-posleft="77" data-postop="14"></span>
+            <span data-posleft="77" data-postop="29"></span>
+            <span data-posleft="77" data-postop="41"></span>
+            <span data-posleft="77" data-postop="50"></span>
+            <span data-posleft="77" data-postop="53"></span>
+            <span data-posleft="77" data-postop="62"></span>
+            <span data-posleft="80" data-postop="-49"></span>
+            <span data-posleft="80" data-postop="-28"></span>
+            <span data-posleft="80" data-postop="-25"></span>
+            <span data-posleft="80" data-postop="-10"></span>
+            <span data-posleft="80" data-postop="-4"></span>
+            <span data-posleft="80" data-postop="5"></span>
+            <span data-posleft="80" data-postop="17"></span>
+            <span data-posleft="80" data-postop="38"></span>
+            <span data-posleft="80" data-postop="53"></span>
+            <span data-posleft="83" data-postop="-55"></span>
+            <span data-posleft="83" data-postop="-52"></span>
+            <span data-posleft="83" data-postop="-37"></span>
+            <span data-posleft="83" data-postop="-34"></span>
+            <span data-posleft="83" data-postop="-13"></span>
+            <span data-posleft="83" data-postop="-4"></span>
+            <span data-posleft="83" data-postop="-1"></span>
+            <span data-posleft="83" data-postop="11"></span>
+            <span data-posleft="83" data-postop="14"></span>
+            <span data-posleft="83" data-postop="17"></span>
+            <span data-posleft="83" data-postop="38"></span>
+            <span data-posleft="83" data-postop="41"></span>
+            <span data-posleft="86" data-postop="-43"></span>
+            <span data-posleft="86" data-postop="-37"></span>
+            <span data-posleft="86" data-postop="-10"></span>
+            <span data-posleft="86" data-postop="-7"></span>
+            <span data-posleft="86" data-postop="-4"></span>
+            <span data-posleft="86" data-postop="-1"></span>
+            <span data-posleft="86" data-postop="50"></span>
+            <span data-posleft="89" data-postop="-37"></span>
+            <span data-posleft="89" data-postop="-31"></span>
+            <span data-posleft="89" data-postop="-16"></span>
+            <span data-posleft="89" data-postop="2"></span>
+            <span data-posleft="89" data-postop="5"></span>
+            <span data-posleft="89" data-postop="8"></span>
+            <span data-posleft="89" data-postop="20"></span>
+            <span data-posleft="89" data-postop="29"></span>
+            <span data-posleft="89" data-postop="41"></span>
+            <span data-posleft="92" data-postop="-34"></span>
+            <span data-posleft="92" data-postop="-13"></span>
+            <span data-posleft="92" data-postop="-4"></span>
+            <span data-posleft="92" data-postop="2"></span>
+            <span data-posleft="92" data-postop="17"></span>
+            <span data-posleft="92" data-postop="29"></span>
+            <span data-posleft="95" data-postop="-28"></span>
+            <span data-posleft="95" data-postop="-25"></span>
+            <span data-posleft="95" data-postop="-7"></span>
+            <span data-posleft="95" data-postop="5"></span>
+            <span data-posleft="95" data-postop="20"></span>
+            <span data-posleft="95" data-postop="23"></span>
+            <span data-posleft="98" data-postop="-19"></span>
+            <span data-posleft="98" data-postop="-7"></span>
+            <span data-posleft="98" data-postop="-4"></span>
+            <span data-posleft="98" data-postop="-1"></span>
+            <span data-posleft="98" data-postop="11"></span>
+            <span data-posleft="98" data-postop="14"></span>
+        </div>
+        <div class="code"></div>
+    </main>
+</body>
+
+</html>

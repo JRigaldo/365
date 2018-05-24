@@ -1,0 +1,12 @@
+<main>
+
+  <script type="text/javascript">
+      console.log('load share')
+      $.get('views/pages/share.ejs', function(share) {
+        html = ejs.render(share, {});
+        $('#share').html(html);
+      });
+
+  </script>
+  <div id="share"></div>
+</main>

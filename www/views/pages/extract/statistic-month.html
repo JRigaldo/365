@@ -1,0 +1,12 @@
+<main>
+
+  <script type="text/javascript">
+      console.log('load statisticMonth')
+      $.get('views/pages/statistic-month.ejs', function(statisticMonth) {
+        html = ejs.render(statisticMonth, {});
+        $('#statisticMonth').html(html);
+      });
+
+  </script>
+  <div id="statisticMonth"></div>
+</main>

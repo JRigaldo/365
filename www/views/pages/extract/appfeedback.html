@@ -1,0 +1,12 @@
+<main>
+
+  <script type="text/javascript">
+      console.log('load appfeedback')
+      $.get('views/pages/appfeedback.ejs', function(appfeedback) {
+        html = ejs.render(appfeedback, {});
+        $('#appfeedback').html(html);
+      });
+
+  </script>
+  <div id="appfeedback"></div>
+</main>

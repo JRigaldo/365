@@ -1,0 +1,12 @@
+<main>
+
+  <script type="text/javascript">
+      console.log('load help')
+      $.get('views/pages/help.ejs', function(help) {
+        html = ejs.render(help, {});
+        $('#help').html(html);
+      });
+
+  </script>
+  <div id="help"></div>
+</main>

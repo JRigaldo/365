@@ -1,0 +1,12 @@
+<main>
+
+  <script type="text/javascript">
+      console.log('load feedback')
+      $.get('views/pages/feedback.ejs', function(feedback) {
+        html = ejs.render(feedback, {});
+        $('#feedback').html(html);
+      });
+
+  </script>
+  <div id="feedback"></div>
+</main>

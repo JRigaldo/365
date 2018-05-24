@@ -1,0 +1,12 @@
+<main>
+
+  <script type="text/javascript">
+      console.log('load results')
+      $.get('views/pages/results.ejs', function(results) {
+        html = ejs.render(results, {});
+        $('#results').html(html);
+      });
+
+  </script>
+  <div id="results"></div>
+</main>

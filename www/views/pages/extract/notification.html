@@ -1,0 +1,12 @@
+<main>
+
+  <script type="text/javascript">
+      console.log('load notification')
+      $.get('views/pages/notification.ejs', function(notification) {
+        html = ejs.render(notification, {});
+        $('#notification').html(html);
+      });
+
+  </script>
+  <div id="notification"></div>
+</main>

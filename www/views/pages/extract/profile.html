@@ -1,0 +1,14 @@
+<main>
+
+  <script type="text/javascript">
+      console.log('load profile')
+      $.get('views/pages/profile.ejs', function(profile) {
+        html = ejs.render(profile, {});
+        $('#profile').html(html);
+      });
+  </script>
+  <div id="profile"></div>
+  <script type="text/javascript">
+    console.log(window.location.hash);
+  </script>
+</main>

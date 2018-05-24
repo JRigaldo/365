@@ -1,0 +1,526 @@
+.testBody{
+  background-color: red;
+}
+
+
+
+body.statistic-year>section#statistic-year,
+body.statistic-month>section#statistic-month,
+body.statistic-day>section#statistic-day,
+body.share>section#share,
+body.results>section#results,
+body.profile>section#profile,
+body.notification>section#notification,
+body.help>section#help,
+body.feedback>section#feedback,
+body.explore>section#explore,
+body.content>section#content,
+body.appfeedback>section#appfeedback,
+body.welcome>section#welcome {
+  display: block;
+}
+
+
+h1.main-title {
+    display: inline-block;
+    font-size: 3em;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 200;
+    text-align: center;
+    color: #FFFFFF;
+    width: 100%;
+    margin-top: 120px;
+}
+
+h1.main-title.start {
+    display: none;
+}
+
+
+div.particules {
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    margin: auto;
+}
+
+div.particules>span {
+    display: block;
+    background: #FFFFFF;
+    position: absolute;
+    left: -10px;
+    top: -10px;
+    border-radius: 50%;
+}
+
+div.particulemeter {
+    /*	display: none;*/
+    width: 200px;
+    height: 1px;
+    background: #FFFFFF;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+div.particulemeter>span {
+    display: block;
+    width: 5px;
+    height: 11px;
+    position: absolute;
+    left: 0px;
+    top: -5px;
+    background: #FFFFFF;
+}
+
+div.particulemeter.start {
+    display: block;
+}
+
+div.countdown {
+    width: 100%;
+    height: 100vh;
+    background: #00C2FF;
+    overflow: hidden;
+    position: absolute;
+    z-index: 100;
+}
+
+div.countdown>span {
+    font-size: 250px;
+    line-height: 250px;
+    display: block;
+    color: rgba(255, 255, 255, 1);
+    position: absolute;
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    margin: -125px auto 0 auto;
+    left: 0;
+    right: 0;
+}
+
+div.duree {
+    width: 200px;
+    height: 11px;
+    background: rgba(255, 255, 255, 0.1);
+    position: absolute;
+    margin: 30px auto;
+    top: 0px;
+    left: 0;
+    right: 0;
+}
+
+div.duree>span {
+    display: block;
+    width: 0px;
+    height: 11px;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+div.code {
+    color: azure;
+    font-size: 6px;
+}
+
+.results main {
+    height: calc(100% - 220px);
+}
+
+.results section {
+    padding: 0;
+}
+
+.results article {
+    position: absolute;
+    width: 100%;
+    max-width: 400px;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+.results main h2 {
+    font-size: 1.5em;
+}
+
+.results main p {
+    font-size: 0.9em;
+    padding: 0 20px;
+}
+
+.results section aside {
+    position: relative;
+    height: 50px;
+}
+
+.results main article button{
+    width: calc(100% - 25px);
+}
+
+.results footer a.refresh{
+    position: absolute;
+    top: -70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+}
+
+.results .congratulation {
+    display: block;
+    text-align: center;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.results .congratulation svg {
+    fill: #FFFFFF;
+    width: 80px;
+}
+
+.statistic main {
+    padding: 0 20px;
+    top: 75px;
+}
+
+.statistic section {
+    padding: 0;
+    top: 0;
+    height: auto;
+}
+
+.statistic aside {
+    position: relative;
+    height: auto;
+}
+
+.statistic h1{
+    text-align: left;
+}
+
+.statistic h2{
+    position: relative;
+}
+
+.statistic h2 a{
+    position: absolute;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    padding: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.statistic aside a svg#icon-arrow-left2, .statistic aside a svg#icon-arrow-right2{
+    display: block;
+    width: 100%;
+    height: 100%;
+    fill: #FFFFFF;
+}
+
+.statistic h2 a:first-child{
+    left: -10px;
+}
+
+.statistic h2 a:last-child{
+    right: -10px;
+}
+
+.statistic .vertical-align {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+}
+
+.statistic main section {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-height: 350px;
+    border-top: 1px solid #FFFFFF;
+    border-bottom: 1px solid #FFFFFF;
+}
+
+
+.statistic main section {
+    border-top: 1px solid #FFFFFF;
+    border-bottom: 1px solid #FFFFFF;
+}
+
+.evaluation.day-star li a svg.icon-radio-unchecked {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    width: 20px;
+    height: 20px;
+}
+
+.day {
+    display: block;
+    width: 100%;
+    height: 50px;
+    margin: 13px 0;
+}
+
+.day:first-child{
+    margin-top: 30px;
+}
+
+.day:last-child{
+    margin-bottom: 30px;
+}
+
+.day div {
+    display: inline-block;
+    float: left;
+    width: 50px;
+    color: #FFFFFF;
+    line-height: 50px;
+}
+
+.evaluation.day-star li a svg{
+    display: block;
+    width: 50px;
+    height: 50px;
+    fill: #FFFFFF;
+}
+
+.evaluation.day-star li a{
+    position: relative;
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+}
+.evaluation.day-star{
+    display: inline-block;
+    float: left;
+    width: calc(100% - 50px);
+    overflow-x: auto;
+    white-space: nowrap;
+    font-size: 0;
+}
+.evaluation.day-star li{
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+    margin: 0 10px;
+}
+
+.statistic .evaluation.month,
+.statistic .evaluation.year {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+
+.statistic .evaluation.month li,
+.statistic .evaluation.year li {
+    display: inline-block;
+}
+
+.statistic .evaluation.month div,
+.statistic .evaluation.year div {
+    display: block;
+    height: 100px;
+    margin: 0 auto;
+    background-color: #FFFFFF;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+}
+
+.statistic .evaluation.month div {
+    width: 40px;
+}
+
+.statistic .evaluation.year div {
+    width: 20px;
+}
+
+.statistic .evaluation.month span,
+.statistic .evaluation.year span {
+    display: inline-block;
+    font-size: 0.7em;
+    text-align: center;
+    margin-top: 13px;
+}
+
+.statistic .evaluation.month span {
+    width: 40px;
+}
+
+.statistic .evaluation.year span {
+    width: 20px;
+}
+
+/*.feedback main{
+    height: calc(100% - 140px);
+}*/
+
+.feedback main section aside {
+    position: relative;
+    height: 200px;
+}
+
+.feedback main section aside svg{
+    position: absolute;
+    width: 45%;
+    max-width: 300px;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+.feedback h2 {
+    padding-top: 50px;
+}
+
+.feedback main section .evaluation-star{
+    text-align: center;
+    margin-top: 50px;
+}
+
+.feedback main section .evaluation-star svg {
+    display: inline-block;
+    width: 50%;
+    max-width: 200px;
+    height: 200px;
+    fill: #FFFFFF;
+}
+
+.feedback .evaluation-meter {
+    position: relative;
+    height: 150px;
+}
+
+.feedback main section aside div{
+    position: absolute;
+    width: 50%;
+    max-width: 200px;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+.feedback main section aside ul{
+    position: relative;
+    margin: 0;
+    height: 2px;
+    width: 100%;
+    background-color: #FFFFFF;
+}
+
+.feedback main section li{
+    position: absolute;
+    left: 0;
+    display: block;
+    width: 3px;
+    height: 15px;
+    background-color: #FFFFFF;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.feedback main section li.active{
+    width: 12px;
+    height: 35px;
+    border-radius: 3px;
+}
+
+.feedback main section li:nth-child(2){
+    left: 33.33%;
+}
+
+.feedback main section li:nth-child(3){
+    left: 66.66%;
+}
+
+.feedback main section li:nth-child(4){
+    left: 100%;
+}
+
+.explore article .border {
+    display: block;
+    height: 450px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+}
+
+.st0 {
+    fill: #FFFFFF;
+}
+
+.help main svg {
+    position: relative;
+    display: block;
+    width: 50px;
+    height: 50px;
+    margin: 0 auto;
+}
+
+
+span.line {
+    display: block;
+    width: 100%;
+    background-color: #FFFFFF;
+    height: 1px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+}
+
+.share article button, .help article button {
+    min-height: 40px;
+}
+
+.share main {
+    height: calc(100% - 270px);
+}
+
+.share main section{
+    height: auto;
+}
+
+.share footer{
+    height: 200px;
+}
+
+.share footer ul{
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.share footer ul li {
+    text-decoration: none;
+    display: inline-block;
+}
+
+.share footer ul li a {
+    display: block;
+    width: 42px;
+    height: 42px;
+}
+
+.share footer ul li a svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    fill: #FFFFFF;
+}

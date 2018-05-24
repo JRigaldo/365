@@ -44,3 +44,56 @@ var app = {
 };
 
 app.initialize();
+
+
+
+// $(document).ready(function(){
+//     $(function () {
+//         $("button").on('click', function () {
+//             $.ajax({
+//                 type: "get",
+//                 dataType: "json",
+//                 cache: false,
+//                 url: $(this).data('json'),
+//                 success: function (data, xhr, settings) {
+//                     $("#").html(data);
+//                 }
+
+//             });
+//         });
+//     });
+// })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

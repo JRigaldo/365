@@ -1,0 +1,12 @@
+<main>
+
+  <script type="text/javascript">
+      console.log('load explore')
+      $.get('views/pages/explore.ejs', function(explore) {
+        html = ejs.render(explore, {});
+        $('#explore').html(html);
+      });
+
+  </script>
+  <div id="explore"></div>
+</main>

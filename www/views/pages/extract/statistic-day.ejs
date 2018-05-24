@@ -1,0 +1,12 @@
+<main>
+
+  <script type="text/javascript">
+      console.log('load statisticDay')
+      $.get('views/pages/statistic-day.ejs', function(statisticDay) {
+        html = ejs.render(statisticDay, {});
+        $('#statisticDay').html(html);
+      });
+
+  </script>
+  <div id="statisticDay"></div>
+</main>

@@ -1,0 +1,21 @@
+{
+  "index": [
+    {
+      "root": "welcome"
+    }
+  ],
+  "routes":[
+    {
+      "title": "welcome",
+      "href": "#welcome",
+    },
+    {
+      "title": "Mon profil",
+      "href": "#profile"
+    },
+    {
+      "title": "Mon explore",
+      "href": "#explore"
+    }
+  ]
+}
