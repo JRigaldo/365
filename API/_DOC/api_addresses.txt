@@ -1,0 +1,11 @@
+
+
+api/user/data/[IdUser]
+// Données utilisateur 
+// [{'FirstName':'Prénom', 'LastName':'Nom de famille'}]
+
+api/user/insert/[IdUser]/subscribe/[FirstName]/[LastName]/[]
+// Insertion pour inscription dans la base de données.
+
+api/user/insert/[IdUser]/eval/[Note]
+// Ajout d'une évaluation (1 / 5)

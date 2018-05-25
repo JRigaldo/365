@@ -39,10 +39,19 @@
   <script type="text/javascript">
 
 
-      function loadContent(hash){
-        var results = $.get('views/pages/' + hash + '.ejs', function(view) {
-          html = ejs.render(view, {});
-          $('section').html(html);
+  var datas = {};
+  var currentRoute;
+
+      function dataRoute(){
+        return $.getJSON('public/config.json', function( jsonStr ){
+          datas = jsonStr.routes[currentRoute];
+        })
+      }
+
+      function loadContent( getUrl, htmlSection ){
+        var results = $.get( getUrl, function(view) {
+          html = ejs.render(view, datas);
+          $( htmlSection ).html(html);
         });
         results.done(function(){
           console.log('test results function loadContent');
@@ -50,31 +59,22 @@
       }
 
       $(window).on('hashchange', function(){
-        if(hash === ''){
-          hash = 'home'
-        }
-        loadContent(location.hash.slice(1))
+        currentRoute = location.hash.slice(1);
+        dataRoute();
+        loadContent( 'views/pages/' + currentRoute + '.ejs', 'section');
+        loadContent( 'views/partials/header.ejs', 'header');
+        loadContent( 'views/partials/footer.ejs', 'footer');
       });
 
-      var url = window.location.href;
-      var hash = url.substring(url.indexOf('#')+1);
-
-      if(hash === ''){
-        hash = 'home'
-      }else if(hash === url){
-        hash = 'home';
-      }
-
-      var splashView = $.get('views/pages/' + hash + '.ejs', function(view) {
-        html = ejs.render(view, {});
-        $('section').html(html);
+      $(window).on('load', function(){
+        currentRoute = 'home';
+        dataRoute();
+        loadContent( 'views/pages/' + currentRoute + '.ejs', 'section');
+        loadContent( 'views/partials/header.ejs', 'header');
+        loadContent( 'views/partials/footer.ejs', 'footer');
       });
-      splashView.done(function(){
-        console.log('test results first load');
-      });
-
-      $('header').load('views/partials/header.ejs')
-      $('footer').load('views/partials/footer.ejs')
+      //$('header').load('views/partials/header.ejs')
+      //$('footer').load('views/partials/footer.ejs')
 
   </script>
 </html>

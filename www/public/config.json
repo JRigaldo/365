@@ -1,21 +1,20 @@
 {
-  "index": [
-    {
-      "root": "welcome"
-    }
-  ],
-  "routes":[
-    {
-      "title": "welcome",
-      "href": "#welcome",
-    },
-    {
-      "title": "Mon profil",
-      "href": "#profile"
-    },
-    {
-      "title": "Mon explore",
-      "href": "#explore"
-    }
-  ]
+  "routes":{
+    "home":{
+        "title": "welcome",
+        "footer": "display"
+      },
+    "welcome":{
+        "title": "welcome",
+        "footer": "footermenu"
+      },
+    "profile":{
+        "title": "Mon profil",
+        "footer": "footermenu"
+      },
+    "explore":{
+        "title": "Mon explore",
+        "footer": "footermenu"
+      }
+  }
 }

@@ -1,15 +1,12 @@
 <nav>
   <ul>
-    <li>
-      <a href="#explore">
-        <button><%= footer-link %></button>
-      </a>
-    </li>
+    <% if (footer === 'display') { %>
     <li>
       <a href="#explore">
         <button>Découvrir</button>
       </a>
     </li>
+    <% } %>
     <li>
       <a href="#profile">
         <button>Créer un profil</button>

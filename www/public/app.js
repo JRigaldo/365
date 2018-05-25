@@ -45,3 +45,74 @@ $(window).on('load', function() {
         }, 300);
     });
 });
+
+/*
+
+var configResults = dataRoute();
+ console.log(configResults);
+ configResults.done(function(data){
+   getPartials(data)
+   console.log('data', data);
+ });
+
+ function dataRoute(){
+   var route = {};
+   return $.getJSON('public/config.json', function(routes){
+     route = routes.title
+   });
+   console.log(route);
+ }
+
+function loadContent(hash){
+  var results = $.get('views/pages/' + hash + '.ejs', function(view) {
+    html = ejs.render(view, {});
+    $('section').html(html);
+  });
+  results.done(function(){
+    console.log('test results function loadContent');
+  });
+}
+
+var url = window.location.href;
+var hash = url.substring(url.indexOf('#')+1);
+
+if(hash === ''){
+  hash = 'home'
+}else if(hash === url){
+  hash = 'home';
+}
+
+var splashView = $.get('views/pages/' + hash + '.ejs', function(view) {
+  html = ejs.render(view, {});
+  $('section').html(html);
+});
+splashView.done(function(){
+  console.log('test results first load');
+});
+
+function getPartials(){
+  var header = $.get('views/partials/header.ejs', function(view) {
+    html = ejs.render(view, {});
+    $('header').html(html);
+  }).done(function(){
+    console.log('header loaded');
+  });
+  var footer = $.get('views/partials/footer.ejs', function(view) {
+    html = ejs.render(view, {});
+    $('footer').html(html);
+  }).done(function(){
+    console.log('footer loaded');
+  });
+}
+
+function onchange(){
+  if(hash === ''){
+    hash = 'home'
+  }
+  loadContent(location.hash.slice(1));
+  getPartials();
+}
+
+$(window).on('hashchange', onchange());
+
+*/
