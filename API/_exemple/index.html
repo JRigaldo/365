@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>API exploitation</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script>
+            var url = 'http://localhost/365/API/';
+            
+            var parseSingleData = function( data )
+            {
+                var htmlContent = '<small><em>';
+
+                $.each( data, function( key, val ) 
+                {     
+                    htmlContent += "<br> - " + key + ':' + val ;
+                });
+                
+                return htmlContent += "</em></small>";
+            }
+            
+            var parseDatas = function( data )
+            {
+                var htmlContent = '';
+                
+                $.each( data, function( key, val ) 
+                {     
+                    htmlContent += "<small><em>"
+
+                    $.each( data[key], function( field, value ) 
+                    {
+                        htmlContent += "<br> - " + field + ':' + value ;
+                    });
+
+                    htmlContent += "</em></small>"
+
+                });
+                
+                return htmlContent;
+            }
+            
+            var parseStatsDatas = function( data )
+            {
+                var htmlContent = '';
+                
+                $.each( data, function( key, val ) 
+                {
+                    htmlContent += "<small><em><br><strong>" + key + '</strong>:'
+           
+                        
+                    $.each( data[key], function( field, value ) 
+                    {                        
+                        if( field != parseInt(field) )
+                        {
+                            $.each( value, function( f, val ) 
+                            {
+                                htmlContent += '<br>N°' + ( f + 1 ) + ' =&gt; ';
+
+                                $.each( val, function( f2, val2 ) 
+                                {
+                                    htmlContent += "" + f2 + ':' + val2 + "; " ;
+                                });
+                            });
+                        }
+                        else
+                        {
+                            htmlContent += '<br>N°' + ( field + 1 ) + ' =&gt; ';
+
+                            $.each( value, function( f, val ) 
+                            {
+                                htmlContent += "" + f + ':' + val + "; " ;
+                            });
+                        
+                       }
+                    });
+
+                    htmlContent += "</em></small>"
+
+                });
+                
+                return htmlContent;
+            }
+            
+            
+            
+            $(window).on('load', function(){
+                
+                //Informations sur l'utilisateur
+               
+                $.getJSON( url + "api/users/user/21", function( data ){
+                    var htmlContent = '<h2>Informations sur l\'utilisateur</h2><h5>api/users/user/21 (21 = IdUSer)</h5>';
+                    
+                    htmlContent += parseDatas( data );
+
+                    $('div#users').html( htmlContent );
+                });
+               
+                
+                //Inscription d'un utilisateur
+                var timestamp = Math.round(+new Date()/1000);
+                $.getJSON(  url + "api/users/subscribe/"+timestamp+"/token/LastnameUser/FirstnameUser/Email@User.com/01/01/1970", function( data ){
+                    
+                    var htmlContent = '<h2>Insertion (inscription) d\'un utilisateur </h2><h5>api/users/subscribe/timestamp/token/LastnameUser/FirstnameUser/Email@User.com/01/01/1970</h5>';
+                    
+                    htmlContent += parseSingleData( data );
+
+                    $('div#statsinsert').html( htmlContent );
+                });
+                
+                //Inscription d'un utilisateur
+                var timestamp = Math.round(+new Date()/1000);
+                $.getJSON(  url + "api/users/subscribe/"+timestamp+"/token/empty/empty/Email@User.com/01/01/1970", function( data ){
+                    
+                    var htmlContent = '<h2>Insertion (inscription) d\'un utilisateur avec champs vides </h2><h5>api/users/subscribe/timestamp/token/empty/empty/Email@User.com/01/01/1970</h5>';
+                    
+                    htmlContent += parseSingleData( data );
+
+                    $('div#statsinsert').html( htmlContent );
+                });
+                
+                
+                
+                //Inscription d'un utilisateur
+                var timestamp = Math.round(+new Date()/1000);
+                $.getJSON(  url + "api/users/subscribe/"+timestamp+"/token/LastnameUser//empty/01/01/1970", function( data ){
+                    
+                    var htmlContent = '<h2>ECHEC Insertion (inscription) d\'un utilisateur (manque de valeurs) </h2><h5>api/users/subscribe/timestamp/token/LastnameUser//empty/01/01/1970</h5>';
+                    
+                    htmlContent += parseSingleData( data );
+
+                    $('div#statsinsert').html( htmlContent );
+                });
+                
+                
+                //Inscription d'un utilisateur
+                var timestamp = Math.round(+new Date()/1000);
+                $.getJSON(  url + "api/users/subscribe/"+timestamp+"/token/LastnameUser/FirstnameUser/empty/01/01/1970", function( data ){
+                    
+                    var htmlContent = '<h2>ECHEC Insertion (inscription) d\'un utilisateur (e-mail faux ou vide) </h2><h5>api/users/subscribe/timestamp/token/LastnameUser/FirstnameUser/empty/01/01/1970</h5>';
+                    
+                    htmlContent += parseSingleData( data );
+
+                    $('div#statsinsert').html( htmlContent );
+                });
+                
+                
+                //Login d'un utilisateur
+              
+                var timestamp = Math.round(+new Date()/1000);
+                $.getJSON(  url + "api/users/login/"+timestamp+"/token/admin@user.ch/admin", function( data ){
+                    
+                    var htmlContent = '<h2>Login d\'un utilisateur </h2><h5>api/users/login/timestamp/token/EmailUser/PassUser</h5>';
+                    
+                    htmlContent += parseSingleData( data );
+
+                    $('div#statsinsert').html( htmlContent );
+                });
+                
+                
+                
+                //Insertion d'une évaluation par l'utilisateur
+                var timestamp = Math.round(+new Date()/1000);
+                $.getJSON(  url + "api/users/stats/21/insert/4/"+timestamp+"/token", function( data ){
+                    
+                    var htmlContent = '<h2>Insertion d\'une évaluation par l\'utilisateur</h2><h5>api/users/stats/21/insert/4/timestamp/token (21 = IdUSer)</h5>';
+                    
+                    htmlContent += parseSingleData( data );
+
+                    $('div#statsinsert').html( htmlContent );
+                });
+                
+                
+                // Statistiques de tous jours où l\'utilisateur a été actif
+                $.getJSON(  url + "api/users/stats/21/days/all", function( data ){
+                    
+                    var htmlContent = '<h2>Statistiques de tous jours où l\'utilisateur a été actif</h2><h5>api/users/stats/21/days/all (21 = IdUSer)</h5>';
+                    
+                    htmlContent += parseStatsDatas( data );
+
+                    $('div#statsdaysall').html( htmlContent );
+                });
+                
+                
+                // Statistique pour un jour d'activité de l'utilisateur
+                $.getJSON(  url + "api/users/stats/21/days/2018-03-23", function( data ){
+                    
+                    var htmlContent = '<h2>Statistique pour un jour d\'activité de l\'utilisateur</h2><h5>api/users/stats/21/days/2018-03-23 (21 = IdUSer)</h5>';
+                    
+                    htmlContent += parseStatsDatas( data );
+
+                    $('div#statsonday').html( htmlContent );
+                });
+                
+           
+                // Statistique pour une semaine d'activité de l'utilisateur
+                $.getJSON(  url + "api/users/stats/21/week/12/2018", function( data ){
+                    
+                    var htmlContent = '<h2>Statistique pour une semaine d\'activité de l\'utilisateur</h2><h5>api/users/stats/21/week/12/2018 (21 = IdUSer)</h5>';
+                    
+                    htmlContent += parseStatsDatas( data );
+
+                    $('div#statsonweek').html( htmlContent );
+                });
+                
+           
+                // Statistique pour un mois d'activité de l'utilisateur
+                $.getJSON(  url + "api/users/stats/21/month/03/2018", function( data ){
+                    
+                    var htmlContent = '<h2>Statistique pour un mois d\'activité de l\'utilisateur</h2><h5>api/users/stats/21/month/03/2018 (21 = IdUSer)</h5>';
+                    
+                    htmlContent += parseStatsDatas( data );
+
+                    $('div#statsonmonth').html( htmlContent );
+                });
+                
+            });
+        </script>
+    </head>
+    <body>
+        <div id="users"></div>
+        <hr>
+        <div id="statsinsert"></div>
+        <hr>
+        <div id="statsdaysall"></div>
+        <hr>
+        <div id="statsonday"></div>
+        <hr>
+        <div id="statsonweek"></div>
+        <hr>
+        <div id="statsonmonth"></div>
+    </body>
+</html>

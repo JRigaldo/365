@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>API exploitation</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="jquery-ui.min.js"></script>
+        <script>
+            
+        var particulesSize      = 4;
+        var easeInspiration     = 'easeInOutCubic';
+        var dureeInspiration    = 5500;
+        var easeExpiration      = 'easeInOutQuart';
+        var dureeExpiration     = 4500;
+        var dureeAttente        = 1500;
+        var dureeTotalExercice  = 5; // minutes 
+        var duree               = 0;
+        var countdown           = 3;
+            
+            
+        $(window).on('load', function()
+        {   
+            //generateParticules();
+            animateParticules();
+        });
+            
+        $(window).on('resize', function()
+        {   
+            animateParticules();
+        });
+            
+            
+        var animdist        = 0;
+            
+        var particuleIsSet  = false;
+            
+        var particules      = null;
+            
+        var particulesPosition = [];
+        /*
+        var generateParticules = function()
+        {
+            for( var i = -100; i <= 100; i += 3)
+            {
+                for( var j = -100; j <= 100; j += 3)
+                {
+                    $('div.particules').append('<span data-posleft="'+i+'" data-postop="'+j+'"></span>');
+                    
+                    $('div.code').append('&lt;span data-posleft="'+i+'" data-postop="'+j+'"&gt;&lt;/span&gt;<br>');
+                }
+            }
+        }
+        */  
+            
+            
+        
+        var animcycle = function()
+        {
+            var r = Math.floor((Math.random() * 3));
+            var n1 = 0;
+            var n2 = 0;
+            var n3 = 0;
+            
+            $.each( particulesPosition, function( k, v)
+            {    
+                var o = particulesPosition[k].obj;
+                o.stop(true, true);
+                
+                n1++;
+                if( particulesPosition[k].animate === r )
+                {
+                    var l = particulesPosition[k].posLeft;
+                    var t = particulesPosition[k].posTop;
+                    var a = particulesPosition[k].animdist;
+                    
+                    if( n1 === 1 )
+                    {   
+                        $('div.particulemeter > span').stop().css({left:0});
+                        $('div.particulemeter > span').animate({left:400}, dureeInspiration, easeInspiration); 
+                    }
+                    o.animate({left:( l * animdist * a ), top:( t * animdist * a )}, dureeInspiration, easeInspiration, function()
+                    {
+                        n2++;
+                        if( n2 === 1 )
+                        {   
+                            $('div.particulemeter > span').stop();
+                            $('div.particulemeter > span').animate({left:0}, dureeExpiration, easeExpiration);
+                        }
+                        o.animate({left:( l ), top:( t )}, dureeExpiration, easeExpiration, function()
+                        {
+                            n3++;
+                            if( n3 === 1 )
+                            { 
+                                $('div.particulemeter > span').stop().animate({opacity:0}, (dureeAttente / 2), function(){
+                                    $('div.particulemeter > span').animate({opacity:1}, (dureeAttente / 2));
+                                });
+                                setTimeout( function(){ animcycle() }, dureeAttente );
+                            }
+                        });
+                    });
+                }
+            });
+        }
+        
+        
+        
+        var doExercice = function()
+        {
+            $('div.duree > span').animate({width:(100*(duree/dureeTotalExercice))+'%'});
+                                           
+            duree += 0.1;
+            
+            if( duree < dureeTotalExercice )
+            {
+                setTimeout( function(){ doExercice(); }, 10 );
+            }
+            else
+            {
+                $('div.particules > span').fadeOut();
+                $('div.particulemeter').fadeOut();
+            } 
+        }
+         
+        
+        
+        var doCountdown = function()
+        {
+            if( countdown >= 1 )
+            {
+                $('div.countdown > span').animate({opacity:1}, 100).html(countdown);
+            }
+            countdown--;
+            
+            if( countdown >= 0 )
+            {
+                setTimeout( function(){ 
+                    
+                    if( countdown >= 1 )
+                    {
+                        $('div.countdown > span').animate({opacity:0.3}, 100, function(){ doCountdown(); }); 
+                    }
+                    else
+                    {
+                        $('div.countdown > span').animate({opacity:0}, 100, function(){ doCountdown(); }); 
+                    }
+                }, 1000); 
+            }
+            else
+            {
+                $('div.countdown').fadeOut();
+                //doExercice();
+                animcycle();
+            } 
+        }
+         
+        
+        var animateParticules = function()
+        {
+            var wWidth = $(window).width();
+            var wHeight = $(window).height();
+            
+            animdist = ( wWidth < wHeight ) ? wWidth / 200 : wHeight / 200;
+            
+            if( !particuleIsSet )
+            {  
+                particules = $('div.particules > span');
+
+                particules.css({width:particulesSize, height:particulesSize});
+            } 
+            
+            
+            $.each( particules, function( k, v)
+            {  
+                if( !particuleIsSet )
+                { 
+                    var random  = Math.floor((Math.random() * 4));
+                    var random2  = Math.floor((Math.random() * 3));
+                    var posLeft = parseInt( $(this).data('posleft') );
+                    var posTop  = parseInt( $(this).data('postop') );
+                                        
+                    if ( posLeft < 0 ){ posLeft -= random; }
+                    else if( posLeft > 0 ) { posLeft -= random; }
+                                        
+                    if ( posTop < 0 ){ posTop -= random; }
+                    else if( posTop > 0 ) { posTop -= random; }
+                  
+                    var animdist = ( k % random === 0 && 100 < ( Math.abs( posTop ) +  Math.abs( posLeft ) ) ) ? 1.0 : 0.7;
+
+                    particulesPosition[k] = {obj:$(this), posLeft:posLeft, posTop:posTop, animdist:animdist, animate:random2};
+                }
+                
+                $(this).css({left:particulesPosition[k].posLeft, top:particulesPosition[k].posTop});
+            });
+            
+            particuleIsSet = true;
+            
+            doCountdown();
+            
+            //animcycle();
+        } 
+        </script>
+        <style>
+            *{box-sizing:border-box;}
+            body{margin:0; padding:0; font-family: sans-serif;}
+            main{width: 100%; height:100vh; background:#00C2FF; overflow:hidden;}
+            
+            div.countdown{width: 100%; height:100vh; background:#00C2FF; overflow:hidden; position: absolute; z-index:100;}
+            div.countdown > span{font-size:250px; line-height:250px; display:block; color:rgba(255, 255, 255, 1); position:absolute; text-align: center; position: absolute; top:50%; margin:-125px auto 0 auto; left:0; right:0;}
+            
+            div.particules{width:10px; height:10px; position:absolute; top:0px; right:0px; bottom:0px; left:0px; margin:auto;}
+            div.particules > span{display:block; background:rgba(255, 255, 255, 1); position: absolute; left:-10px; top:-10px; border-radius:50%;}
+            
+            div.particulemeter{width:400px; height:1px; background:rgba(255, 255, 255, 0.5); position:absolute; margin:30px auto; bottom:0px; left:0; right:0;}
+            div.particulemeter > span{display:block; width:5px; height:11px; position: absolute; left:0px; top:-5px; background:rgba(255, 255, 255, 0.9); }
+            
+            div.duree{width:400px; height:11px; background:rgba(255, 255, 255, 0.1); position:absolute; margin:30px auto; top:0px; left:0; right:0;}
+            div.duree > span{display:block; width:0px; height:11px; background:rgba(255, 255, 255, 0.9); }
+            
+            img{position:absolute;  top:0px; right:0px; bottom:8px; left:-11px; margin:auto; opacity: 0.1;}
+            div.code{color:azure; font-size:6px;}
+        </style>
+    </head>
+    <body>
+        <main>
+            
+            <div class="duree"><span></span></div>
+            
+            <div class="countdown"><span></span></div>
+            
+            <div class="particulemeter"><span></span></div>
+        
+            <div class="particules">
+                
+<span data-posleft="-100" data-postop="-1"></span>
+<span data-posleft="-100" data-postop="2"></span>
+<span data-posleft="-100" data-postop="8"></span>
+<span data-posleft="-100" data-postop="20"></span>
+
+<span data-posleft="-97" data-postop="-25"></span>
+<span data-posleft="-97" data-postop="-7"></span>
+<span data-posleft="-97" data-postop="2"></span>       
+<span data-posleft="-97" data-postop="11"></span>
+<span data-posleft="-97" data-postop="23"></span>
+                
+<span data-posleft="-94" data-postop="-34"></span>
+<span data-posleft="-94" data-postop="-28"></span>
+<span data-posleft="-94" data-postop="-7"></span>
+<span data-posleft="-94" data-postop="20"></span>
+<span data-posleft="-94" data-postop="32"></span>
+
+<span data-posleft="-91" data-postop="-37"></span>
+<span data-posleft="-91" data-postop="-22"></span>
+<span data-posleft="-91" data-postop="-4"></span>
+<span data-posleft="-91" data-postop="2"></span>
+<span data-posleft="-91" data-postop="5"></span>
+<span data-posleft="-91" data-postop="23"></span>
+<span data-posleft="-91" data-postop="26"></span>
+          
+<span data-posleft="-88" data-postop="-40"></span>
+<span data-posleft="-88" data-postop="-34"></span>
+<span data-posleft="-88" data-postop="-25"></span>
+<span data-posleft="-88" data-postop="8"></span>
+<span data-posleft="-88" data-postop="11"></span>
+<span data-posleft="-88" data-postop="26"></span>          
+<span data-posleft="-88" data-postop="41"></span>
+                
+<span data-posleft="-85" data-postop="-40"></span>
+<span data-posleft="-85" data-postop="-28"></span>
+<span data-posleft="-85" data-postop="-25"></span>
+<span data-posleft="-85" data-postop="-10"></span>
+<span data-posleft="-85" data-postop="-4"></span>
+<span data-posleft="-85" data-postop="-1"></span>
+<span data-posleft="-85" data-postop="2"></span>
+<span data-posleft="-85" data-postop="17"></span>
+<span data-posleft="-85" data-postop="32"></span>
+<span data-posleft="-85" data-postop="47"></span>
+           
+<span data-posleft="-82" data-postop="-52"></span>
+<span data-posleft="-82" data-postop="-37"></span>
+<span data-posleft="-82" data-postop="-25"></span>
+<span data-posleft="-82" data-postop="-13"></span>
+<span data-posleft="-82" data-postop="-10"></span>
+<span data-posleft="-82" data-postop="14"></span>
+<span data-posleft="-82" data-postop="20"></span>
+<span data-posleft="-82" data-postop="23"></span>
+<span data-posleft="-82" data-postop="53"></span>
+                  
+<span data-posleft="-79" data-postop="-52"></span>
+<span data-posleft="-79" data-postop="2"></span>
+<span data-posleft="-79" data-postop="5"></span>
+<span data-posleft="-79" data-postop="8"></span>
+<span data-posleft="-79" data-postop="11"></span>
+<span data-posleft="-79" data-postop="20"></span>
+<span data-posleft="-79" data-postop="26"></span>
+<span data-posleft="-79" data-postop="32"></span>
+<span data-posleft="-79" data-postop="56"></span>
+       
+<span data-posleft="-76" data-postop="-64"></span>
+<span data-posleft="-76" data-postop="-61"></span>
+<span data-posleft="-76" data-postop="-58"></span>
+<span data-posleft="-76" data-postop="-49"></span>
+<span data-posleft="-76" data-postop="-46"></span>
+<span data-posleft="-76" data-postop="-25"></span>
+<span data-posleft="-76" data-postop="-13"></span>
+<span data-posleft="-76" data-postop="-7"></span>
+<span data-posleft="-76" data-postop="2"></span>
+<span data-posleft="-76" data-postop="5"></span>
+<span data-posleft="-76" data-postop="11"></span>
+<span data-posleft="-76" data-postop="23"></span>
+<span data-posleft="-76" data-postop="29"></span>
+<span data-posleft="-76" data-postop="32"></span>
+<span data-posleft="-76" data-postop="35"></span>
+<span data-posleft="-76" data-postop="56"></span>
+<span data-posleft="-76" data-postop="65"></span>  
+                
+<span data-posleft="-73" data-postop="-61"></span>
+<span data-posleft="-73" data-postop="-34"></span>
+<span data-posleft="-73" data-postop="-28"></span>
+<span data-posleft="-73" data-postop="-25"></span>
+<span data-posleft="-73" data-postop="-13"></span>
+<span data-posleft="-73" data-postop="-7"></span>
+<span data-posleft="-73" data-postop="-1"></span>
+<span data-posleft="-73" data-postop="2"></span>
+<span data-posleft="-73" data-postop="17"></span>
+<span data-posleft="-73" data-postop="26"></span>
+<span data-posleft="-73" data-postop="38"></span>
+<span data-posleft="-73" data-postop="47"></span>
+<span data-posleft="-73" data-postop="62"></span>
+        
+<span data-posleft="-70" data-postop="-70"></span>
+<span data-posleft="-70" data-postop="-58"></span>
+<span data-posleft="-70" data-postop="-55"></span>
+<span data-posleft="-70" data-postop="-40"></span>
+<span data-posleft="-70" data-postop="-37"></span>
+<span data-posleft="-70" data-postop="-34"></span>
+<span data-posleft="-70" data-postop="-19"></span>
+<span data-posleft="-70" data-postop="-13"></span>
+<span data-posleft="-70" data-postop="-7"></span>
+<span data-posleft="-70" data-postop="-4"></span>
+<span data-posleft="-70" data-postop="2"></span>
+<span data-posleft="-70" data-postop="5"></span>
+<span data-posleft="-70" data-postop="11"></span>
+<span data-posleft="-70" data-postop="17"></span>
+<span data-posleft="-70" data-postop="23"></span>
+<span data-posleft="-70" data-postop="32"></span>
+<span data-posleft="-70" data-postop="35"></span>
+<span data-posleft="-70" data-postop="41"></span>
+<span data-posleft="-70" data-postop="50"></span>
+<span data-posleft="-70" data-postop="53"></span>
+           
+<span data-posleft="-67" data-postop="-73"></span>
+<span data-posleft="-67" data-postop="-34"></span>
+<span data-posleft="-67" data-postop="-31"></span>
+<span data-posleft="-67" data-postop="-19"></span>
+<span data-posleft="-67" data-postop="-16"></span>
+<span data-posleft="-67" data-postop="-7"></span>
+<span data-posleft="-67" data-postop="5"></span>
+<span data-posleft="-67" data-postop="8"></span>
+<span data-posleft="-67" data-postop="11"></span>
+<span data-posleft="-67" data-postop="20"></span>
+<span data-posleft="-67" data-postop="29"></span>
+<span data-posleft="-67" data-postop="47"></span>
+<span data-posleft="-67" data-postop="53"></span>
+<span data-posleft="-67" data-postop="65"></span>
+         
+<span data-posleft="-64" data-postop="-22"></span>
+<span data-posleft="-64" data-postop="-13"></span>
+<span data-posleft="-64" data-postop="-10"></span>
+<span data-posleft="-64" data-postop="-7"></span>
+<span data-posleft="-64" data-postop="5"></span>
+<span data-posleft="-64" data-postop="8"></span>
+<span data-posleft="-64" data-postop="50"></span>
+<span data-posleft="-64" data-postop="71"></span>
+
+<span data-posleft="-61" data-postop="-79"></span>
+<span data-posleft="-61" data-postop="-70"></span>
+<span data-posleft="-61" data-postop="-55"></span>
+<span data-posleft="-61" data-postop="-49"></span>
+<span data-posleft="-61" data-postop="-31"></span>
+<span data-posleft="-61" data-postop="-22"></span>
+<span data-posleft="-61" data-postop="-16"></span>
+<span data-posleft="-61" data-postop="-10"></span>
+<span data-posleft="-61" data-postop="-7"></span>
+<span data-posleft="-61" data-postop="-4"></span>
+<span data-posleft="-61" data-postop="-1"></span>
+<span data-posleft="-61" data-postop="2"></span>
+<span data-posleft="-61" data-postop="5"></span>
+<span data-posleft="-61" data-postop="8"></span>
+<span data-posleft="-61" data-postop="11"></span>
+<span data-posleft="-61" data-postop="17"></span>
+<span data-posleft="-61" data-postop="23"></span>
+<span data-posleft="-61" data-postop="32"></span>
+<span data-posleft="-61" data-postop="47"></span>
+<span data-posleft="-61" data-postop="53"></span>
+<span data-posleft="-61" data-postop="65"></span>
+<span data-posleft="-61" data-postop="71"></span>
+          
+<span data-posleft="-58" data-postop="-76"></span>
+<span data-posleft="-58" data-postop="-73"></span>
+<span data-posleft="-58" data-postop="-40"></span>
+<span data-posleft="-58" data-postop="-37"></span>
+<span data-posleft="-58" data-postop="-34"></span>
+<span data-posleft="-58" data-postop="-4"></span>
+<span data-posleft="-58" data-postop="8"></span>
+<span data-posleft="-58" data-postop="14"></span>
+<span data-posleft="-58" data-postop="17"></span>
+<span data-posleft="-58" data-postop="53"></span>
+<span data-posleft="-58" data-postop="65"></span>
+<span data-posleft="-58" data-postop="77"></span>
+          
+<span data-posleft="-55" data-postop="-82"></span>
+<span data-posleft="-55" data-postop="-58"></span>
+<span data-posleft="-55" data-postop="-55"></span>
+<span data-posleft="-55" data-postop="-52"></span>
+<span data-posleft="-55" data-postop="-43"></span>
+<span data-posleft="-55" data-postop="-28"></span>
+<span data-posleft="-55" data-postop="-25"></span>
+<span data-posleft="-55" data-postop="-22"></span>
+<span data-posleft="-55" data-postop="-16"></span>
+<span data-posleft="-55" data-postop="-7"></span>
+<span data-posleft="-55" data-postop="-4"></span>
+<span data-posleft="-55" data-postop="5"></span>
+<span data-posleft="-55" data-postop="8"></span>
+<span data-posleft="-55" data-postop="11"></span>
+<span data-posleft="-55" data-postop="14"></span>
+<span data-posleft="-55" data-postop="20"></span>
+<span data-posleft="-55" data-postop="23"></span>
+<span data-posleft="-55" data-postop="29"></span>
+<span data-posleft="-55" data-postop="35"></span>
+<span data-posleft="-55" data-postop="41"></span>
+<span data-posleft="-55" data-postop="53"></span>
+<span data-posleft="-55" data-postop="62"></span>
+<span data-posleft="-55" data-postop="71"></span>
+<span data-posleft="-55" data-postop="80"></span> 
+                
+<span data-posleft="-52" data-postop="-82"></span>
+<span data-posleft="-52" data-postop="-70"></span>
+<span data-posleft="-52" data-postop="-61"></span>
+<span data-posleft="-52" data-postop="-55"></span>
+<span data-posleft="-52" data-postop="-43"></span>
+<span data-posleft="-52" data-postop="-40"></span>
+<span data-posleft="-52" data-postop="-37"></span>
+<span data-posleft="-52" data-postop="-22"></span>
+<span data-posleft="-52" data-postop="-16"></span>
+<span data-posleft="-52" data-postop="-10"></span>
+<span data-posleft="-52" data-postop="-7"></span>
+<span data-posleft="-52" data-postop="-1"></span>
+<span data-posleft="-52" data-postop="2"></span>
+<span data-posleft="-52" data-postop="8"></span>
+<span data-posleft="-52" data-postop="11"></span>
+<span data-posleft="-52" data-postop="17"></span>
+<span data-posleft="-52" data-postop="26"></span>
+<span data-posleft="-52" data-postop="29"></span>
+<span data-posleft="-52" data-postop="32"></span>
+<span data-posleft="-52" data-postop="44"></span>
+<span data-posleft="-52" data-postop="56"></span>
+<span data-posleft="-52" data-postop="65"></span>
+<span data-posleft="-52" data-postop="74"></span>
+               
+<span data-posleft="-49" data-postop="-88"></span>
+<span data-posleft="-49" data-postop="-61"></span>
+<span data-posleft="-49" data-postop="-28"></span>
+<span data-posleft="-49" data-postop="-25"></span>
+<span data-posleft="-49" data-postop="-16"></span>
+<span data-posleft="-49" data-postop="5"></span>
+<span data-posleft="-49" data-postop="8"></span>
+<span data-posleft="-49" data-postop="11"></span>
+<span data-posleft="-49" data-postop="41"></span>
+<span data-posleft="-49" data-postop="44"></span>
+<span data-posleft="-49" data-postop="62"></span>
+<span data-posleft="-49" data-postop="83"></span>         
+
+<span data-posleft="-46" data-postop="-52"></span>
+<span data-posleft="-46" data-postop="-49"></span>
+<span data-posleft="-46" data-postop="-37"></span>
+<span data-posleft="-46" data-postop="-34"></span>
+<span data-posleft="-46" data-postop="-28"></span>
+<span data-posleft="-46" data-postop="-25"></span>
+<span data-posleft="-46" data-postop="-22"></span>
+<span data-posleft="-46" data-postop="-16"></span>
+<span data-posleft="-46" data-postop="-4"></span>
+<span data-posleft="-46" data-postop="-1"></span>
+<span data-posleft="-46" data-postop="2"></span>
+<span data-posleft="-46" data-postop="5"></span>
+<span data-posleft="-46" data-postop="17"></span>
+<span data-posleft="-46" data-postop="20"></span>
+<span data-posleft="-46" data-postop="23"></span>
+<span data-posleft="-46" data-postop="26"></span>
+<span data-posleft="-46" data-postop="32"></span>
+<span data-posleft="-46" data-postop="38"></span>
+<span data-posleft="-46" data-postop="41"></span>
+<span data-posleft="-46" data-postop="53"></span>
+<span data-posleft="-46" data-postop="56"></span>
+<span data-posleft="-46" data-postop="65"></span>
+<span data-posleft="-46" data-postop="68"></span>
+<span data-posleft="-46" data-postop="83"></span>
+       
+<span data-posleft="-43" data-postop="-61"></span>
+<span data-posleft="-43" data-postop="-58"></span>
+<span data-posleft="-43" data-postop="-52"></span>
+<span data-posleft="-43" data-postop="-25"></span>
+<span data-posleft="-43" data-postop="-22"></span>
+<span data-posleft="-43" data-postop="-13"></span>
+<span data-posleft="-43" data-postop="-10"></span>
+<span data-posleft="-43" data-postop="-7"></span>
+<span data-posleft="-43" data-postop="2"></span>
+<span data-posleft="-43" data-postop="8"></span>
+<span data-posleft="-43" data-postop="11"></span>
+<span data-posleft="-43" data-postop="20"></span>
+<span data-posleft="-43" data-postop="23"></span>
+<span data-posleft="-43" data-postop="29"></span>
+<span data-posleft="-43" data-postop="32"></span>
+<span data-posleft="-43" data-postop="38"></span>
+<span data-posleft="-43" data-postop="41"></span>
+<span data-posleft="-43" data-postop="56"></span>
+<span data-posleft="-43" data-postop="65"></span>
+<span data-posleft="-43" data-postop="83"></span>
+             
+<span data-posleft="-40" data-postop="-91"></span>
+<span data-posleft="-40" data-postop="-79"></span>
+<span data-posleft="-40" data-postop="-73"></span>
+<span data-posleft="-40" data-postop="-70"></span>
+<span data-posleft="-40" data-postop="-22"></span>
+<span data-posleft="-40" data-postop="-19"></span>
+<span data-posleft="-40" data-postop="-13"></span>
+<span data-posleft="-40" data-postop="5"></span>
+<span data-posleft="-40" data-postop="8"></span>
+<span data-posleft="-40" data-postop="26"></span>
+<span data-posleft="-40" data-postop="47"></span>
+<span data-posleft="-40" data-postop="53"></span>
+<span data-posleft="-40" data-postop="59"></span>
+<span data-posleft="-40" data-postop="65"></span>
+<span data-posleft="-40" data-postop="68"></span>
+<span data-posleft="-40" data-postop="80"></span>
+<span data-posleft="-40" data-postop="89"></span>
+             
+<span data-posleft="-37" data-postop="-88"></span>
+<span data-posleft="-37" data-postop="-79"></span>
+<span data-posleft="-37" data-postop="-76"></span>
+<span data-posleft="-37" data-postop="-67"></span>
+<span data-posleft="-37" data-postop="-64"></span>
+<span data-posleft="-37" data-postop="-52"></span>
+<span data-posleft="-37" data-postop="-49"></span>
+<span data-posleft="-37" data-postop="-43"></span>
+<span data-posleft="-37" data-postop="-37"></span>
+<span data-posleft="-37" data-postop="-34"></span>
+<span data-posleft="-37" data-postop="-31"></span>
+<span data-posleft="-37" data-postop="-25"></span>
+<span data-posleft="-37" data-postop="-22"></span>
+<span data-posleft="-37" data-postop="-19"></span>
+<span data-posleft="-37" data-postop="-13"></span>
+<span data-posleft="-37" data-postop="-10"></span>
+<span data-posleft="-37" data-postop="-7"></span>
+<span data-posleft="-37" data-postop="-4"></span>
+<span data-posleft="-37" data-postop="-1"></span>
+<span data-posleft="-37" data-postop="2"></span>
+<span data-posleft="-37" data-postop="5"></span>
+<span data-posleft="-37" data-postop="8"></span>
+<span data-posleft="-37" data-postop="17"></span>
+<span data-posleft="-37" data-postop="20"></span>
+<span data-posleft="-37" data-postop="23"></span>
+<span data-posleft="-37" data-postop="29"></span>
+<span data-posleft="-37" data-postop="38"></span>
+<span data-posleft="-37" data-postop="41"></span>
+<span data-posleft="-37" data-postop="47"></span>
+<span data-posleft="-37" data-postop="53"></span>
+<span data-posleft="-37" data-postop="56"></span>
+<span data-posleft="-37" data-postop="65"></span>
+<span data-posleft="-37" data-postop="71"></span>
+<span data-posleft="-37" data-postop="92"></span>
+               
+<span data-posleft="-34" data-postop="-82"></span>
+<span data-posleft="-34" data-postop="-79"></span>
+<span data-posleft="-34" data-postop="-67"></span>
+<span data-posleft="-34" data-postop="-64"></span>
+<span data-posleft="-34" data-postop="-61"></span>
+<span data-posleft="-34" data-postop="-49"></span>
+<span data-posleft="-34" data-postop="-46"></span>
+<span data-posleft="-34" data-postop="-43"></span>
+<span data-posleft="-34" data-postop="-34"></span>
+<span data-posleft="-34" data-postop="-31"></span>
+<span data-posleft="-34" data-postop="-10"></span>
+<span data-posleft="-34" data-postop="-4"></span>
+<span data-posleft="-34" data-postop="-1"></span>
+<span data-posleft="-34" data-postop="2"></span>
+<span data-posleft="-34" data-postop="5"></span>
+<span data-posleft="-34" data-postop="8"></span>
+<span data-posleft="-34" data-postop="11"></span>
+<span data-posleft="-34" data-postop="14"></span>
+<span data-posleft="-34" data-postop="17"></span>
+<span data-posleft="-34" data-postop="29"></span>
+<span data-posleft="-34" data-postop="32"></span>
+<span data-posleft="-34" data-postop="38"></span>
+<span data-posleft="-34" data-postop="41"></span>
+<span data-posleft="-34" data-postop="56"></span>
+<span data-posleft="-34" data-postop="59"></span>
+<span data-posleft="-34" data-postop="68"></span>
+<span data-posleft="-34" data-postop="77"></span>
+<span data-posleft="-34" data-postop="83"></span>
+<span data-posleft="-34" data-postop="89"></span>
+<span data-posleft="-34" data-postop="92"></span>
+               
+<span data-posleft="-31" data-postop="-91"></span>
+<span data-posleft="-31" data-postop="-85"></span>
+<span data-posleft="-31" data-postop="-76"></span>
+<span data-posleft="-31" data-postop="-70"></span>
+<span data-posleft="-31" data-postop="-61"></span>
+<span data-posleft="-31" data-postop="-55"></span>
+<span data-posleft="-31" data-postop="-52"></span>
+<span data-posleft="-31" data-postop="-49"></span>
+<span data-posleft="-31" data-postop="-46"></span>
+<span data-posleft="-31" data-postop="-43"></span>
+<span data-posleft="-31" data-postop="-37"></span>
+<span data-posleft="-31" data-postop="-31"></span>
+<span data-posleft="-31" data-postop="-25"></span>
+<span data-posleft="-31" data-postop="-22"></span>
+<span data-posleft="-31" data-postop="-13"></span>
+<span data-posleft="-31" data-postop="-4"></span>
+<span data-posleft="-31" data-postop="-1"></span>
+<span data-posleft="-31" data-postop="2"></span>
+<span data-posleft="-31" data-postop="5"></span>
+<span data-posleft="-31" data-postop="14"></span>
+<span data-posleft="-31" data-postop="26"></span>
+<span data-posleft="-31" data-postop="29"></span>
+<span data-posleft="-31" data-postop="32"></span>
+<span data-posleft="-31" data-postop="35"></span>
+<span data-posleft="-31" data-postop="41"></span>
+<span data-posleft="-31" data-postop="47"></span>
+<span data-posleft="-31" data-postop="53"></span>
+<span data-posleft="-31" data-postop="56"></span>
+<span data-posleft="-31" data-postop="59"></span>
+<span data-posleft="-31" data-postop="68"></span>
+<span data-posleft="-31" data-postop="71"></span>
+<span data-posleft="-31" data-postop="74"></span>
+<span data-posleft="-31" data-postop="83"></span>
+<span data-posleft="-31" data-postop="86"></span>
+                
+<span data-posleft="-28" data-postop="-85"></span>
+<span data-posleft="-28" data-postop="-82"></span>
+<span data-posleft="-28" data-postop="-79"></span>
+<span data-posleft="-28" data-postop="-58"></span>
+<span data-posleft="-28" data-postop="-49"></span>
+<span data-posleft="-28" data-postop="-43"></span>
+<span data-posleft="-28" data-postop="-37"></span>
+<span data-posleft="-28" data-postop="-34"></span>
+<span data-posleft="-28" data-postop="-25"></span>
+<span data-posleft="-28" data-postop="-16"></span>
+<span data-posleft="-28" data-postop="-13"></span>
+<span data-posleft="-28" data-postop="-7"></span>
+<span data-posleft="-28" data-postop="2"></span>
+<span data-posleft="-28" data-postop="5"></span>
+<span data-posleft="-28" data-postop="11"></span>
+<span data-posleft="-28" data-postop="17"></span>
+<span data-posleft="-28" data-postop="20"></span>
+<span data-posleft="-28" data-postop="23"></span>
+<span data-posleft="-28" data-postop="29"></span>
+<span data-posleft="-28" data-postop="32"></span>
+<span data-posleft="-28" data-postop="35"></span>
+<span data-posleft="-28" data-postop="38"></span>
+<span data-posleft="-28" data-postop="41"></span>
+<span data-posleft="-28" data-postop="62"></span>
+<span data-posleft="-28" data-postop="74"></span>
+<span data-posleft="-28" data-postop="80"></span>
+
+<span data-posleft="-25" data-postop="-94"></span>
+<span data-posleft="-25" data-postop="-73"></span>
+<span data-posleft="-25" data-postop="-70"></span>
+<span data-posleft="-25" data-postop="-64"></span>
+<span data-posleft="-25" data-postop="-58"></span>
+<span data-posleft="-25" data-postop="-52"></span>
+<span data-posleft="-25" data-postop="-46"></span>
+<span data-posleft="-25" data-postop="-43"></span>
+<span data-posleft="-25" data-postop="-28"></span>
+<span data-posleft="-25" data-postop="-25"></span>
+<span data-posleft="-25" data-postop="-22"></span>
+<span data-posleft="-25" data-postop="-13"></span>
+<span data-posleft="-25" data-postop="2"></span>
+<span data-posleft="-25" data-postop="8"></span>
+<span data-posleft="-25" data-postop="14"></span>
+<span data-posleft="-25" data-postop="17"></span>
+<span data-posleft="-25" data-postop="20"></span>
+<span data-posleft="-25" data-postop="23"></span>
+<span data-posleft="-25" data-postop="38"></span>
+<span data-posleft="-25" data-postop="41"></span>
+<span data-posleft="-25" data-postop="44"></span>
+<span data-posleft="-25" data-postop="50"></span>
+<span data-posleft="-25" data-postop="56"></span>
+<span data-posleft="-25" data-postop="59"></span>
+<span data-posleft="-25" data-postop="68"></span>
+<span data-posleft="-25" data-postop="83"></span>
+<span data-posleft="-25" data-postop="95"></span>
+   
+<span data-posleft="-22" data-postop="-94"></span>
+<span data-posleft="-22" data-postop="-82"></span>
+<span data-posleft="-22" data-postop="-70"></span>
+<span data-posleft="-22" data-postop="-67"></span>
+<span data-posleft="-22" data-postop="-64"></span>
+<span data-posleft="-22" data-postop="-58"></span>
+<span data-posleft="-22" data-postop="-52"></span>
+<span data-posleft="-22" data-postop="-49"></span>
+<span data-posleft="-22" data-postop="-46"></span>
+<span data-posleft="-22" data-postop="-37"></span>
+<span data-posleft="-22" data-postop="-31"></span>
+<span data-posleft="-22" data-postop="-28"></span>
+<span data-posleft="-22" data-postop="-19"></span>
+<span data-posleft="-22" data-postop="-16"></span>
+<span data-posleft="-22" data-postop="-10"></span>
+<span data-posleft="-22" data-postop="-7"></span>
+<span data-posleft="-22" data-postop="-4"></span>
+<span data-posleft="-22" data-postop="-1"></span>
+<span data-posleft="-22" data-postop="2"></span>             
+<span data-posleft="-22" data-postop="5"></span>
+<span data-posleft="-22" data-postop="11"></span>
+<span data-posleft="-22" data-postop="14"></span>
+<span data-posleft="-22" data-postop="17"></span>
+<span data-posleft="-22" data-postop="20"></span>
+<span data-posleft="-22" data-postop="26"></span>
+<span data-posleft="-22" data-postop="29"></span>
+<span data-posleft="-22" data-postop="32"></span>
+<span data-posleft="-22" data-postop="47"></span>
+<span data-posleft="-22" data-postop="53"></span>
+<span data-posleft="-22" data-postop="56"></span>
+<span data-posleft="-22" data-postop="62"></span>
+<span data-posleft="-22" data-postop="65"></span>
+<span data-posleft="-22" data-postop="68"></span>
+<span data-posleft="-22" data-postop="77"></span>
+   
+<span data-posleft="-19" data-postop="-94"></span>
+<span data-posleft="-19" data-postop="-88"></span>
+<span data-posleft="-19" data-postop="-82"></span>
+<span data-posleft="-19" data-postop="-67"></span>
+<span data-posleft="-19" data-postop="-64"></span>
+<span data-posleft="-19" data-postop="-55"></span>
+<span data-posleft="-19" data-postop="-52"></span>
+<span data-posleft="-19" data-postop="-46"></span>
+<span data-posleft="-19" data-postop="-31"></span>
+<span data-posleft="-19" data-postop="-28"></span>
+<span data-posleft="-19" data-postop="-22"></span>
+<span data-posleft="-19" data-postop="-19"></span>
+<span data-posleft="-19" data-postop="-13"></span>
+<span data-posleft="-19" data-postop="-10"></span>
+<span data-posleft="-19" data-postop="-7"></span>
+<span data-posleft="-19" data-postop="8"></span>
+<span data-posleft="-19" data-postop="14"></span>
+<span data-posleft="-19" data-postop="17"></span>
+<span data-posleft="-19" data-postop="23"></span>
+<span data-posleft="-19" data-postop="26"></span>
+<span data-posleft="-19" data-postop="29"></span>
+<span data-posleft="-19" data-postop="38"></span>
+<span data-posleft="-19" data-postop="41"></span>
+<span data-posleft="-19" data-postop="44"></span>
+<span data-posleft="-19" data-postop="56"></span>
+<span data-posleft="-19" data-postop="59"></span>
+<span data-posleft="-19" data-postop="65"></span>
+<span data-posleft="-19" data-postop="71"></span>
+<span data-posleft="-19" data-postop="86"></span>
+<span data-posleft="-19" data-postop="89"></span>
+<span data-posleft="-19" data-postop="98"></span>
+                
+<span data-posleft="-16" data-postop="-100"></span>
+<span data-posleft="-16" data-postop="-82"></span>
+<span data-posleft="-16" data-postop="-76"></span>
+<span data-posleft="-16" data-postop="-70"></span>
+<span data-posleft="-16" data-postop="-67"></span>
+<span data-posleft="-16" data-postop="-64"></span>
+<span data-posleft="-16" data-postop="-49"></span>
+<span data-posleft="-16" data-postop="-46"></span>
+<span data-posleft="-16" data-postop="-43"></span>
+<span data-posleft="-16" data-postop="-40"></span>
+<span data-posleft="-16" data-postop="-37"></span>
+<span data-posleft="-16" data-postop="-31"></span>
+<span data-posleft="-16" data-postop="-10"></span>
+<span data-posleft="-16" data-postop="-7"></span>
+<span data-posleft="-16" data-postop="-4"></span>
+<span data-posleft="-16" data-postop="5"></span>
+<span data-posleft="-16" data-postop="8"></span>
+<span data-posleft="-16" data-postop="11"></span>
+<span data-posleft="-16" data-postop="14"></span>
+<span data-posleft="-16" data-postop="20"></span>
+<span data-posleft="-16" data-postop="29"></span>
+<span data-posleft="-16" data-postop="35"></span>
+<span data-posleft="-16" data-postop="38"></span>
+<span data-posleft="-16" data-postop="44"></span>
+<span data-posleft="-16" data-postop="47"></span>
+<span data-posleft="-16" data-postop="59"></span>
+<span data-posleft="-16" data-postop="62"></span>
+<span data-posleft="-16" data-postop="68"></span>
+<span data-posleft="-16" data-postop="77"></span>
+<span data-posleft="-16" data-postop="83"></span>
+<span data-posleft="-16" data-postop="86"></span>
+<span data-posleft="-16" data-postop="92"></span>
+<span data-posleft="-16" data-postop="98"></span>
+                
+<span data-posleft="-13" data-postop="-94"></span>
+<span data-posleft="-13" data-postop="-91"></span>
+<span data-posleft="-13" data-postop="-73"></span>
+<span data-posleft="-13" data-postop="-58"></span>
+<span data-posleft="-13" data-postop="-52"></span>
+<span data-posleft="-13" data-postop="-34"></span>
+<span data-posleft="-13" data-postop="-28"></span>
+<span data-posleft="-13" data-postop="-25"></span>
+<span data-posleft="-13" data-postop="-22"></span>
+<span data-posleft="-13" data-postop="-16"></span>
+<span data-posleft="-13" data-postop="-7"></span>
+<span data-posleft="-13" data-postop="-4"></span>
+<span data-posleft="-13" data-postop="2"></span>
+<span data-posleft="-13" data-postop="5"></span>
+<span data-posleft="-13" data-postop="11"></span>
+<span data-posleft="-13" data-postop="14"></span>
+<span data-posleft="-13" data-postop="17"></span>
+<span data-posleft="-13" data-postop="23"></span>
+<span data-posleft="-13" data-postop="29"></span>
+<span data-posleft="-13" data-postop="44"></span>
+<span data-posleft="-13" data-postop="50"></span>
+<span data-posleft="-13" data-postop="59"></span>
+<span data-posleft="-13" data-postop="62"></span>
+<span data-posleft="-13" data-postop="68"></span>
+<span data-posleft="-13" data-postop="74"></span>
+<span data-posleft="-13" data-postop="77"></span>
+<span data-posleft="-13" data-postop="80"></span>
+<span data-posleft="-13" data-postop="89"></span>
+<span data-posleft="-13" data-postop="98"></span>
+                
+<span data-posleft="-10" data-postop="-85"></span>
+<span data-posleft="-10" data-postop="-73"></span>
+<span data-posleft="-10" data-postop="-52"></span>
+<span data-posleft="-10" data-postop="-49"></span>
+<span data-posleft="-10" data-postop="-40"></span>
+<span data-posleft="-10" data-postop="-37"></span>
+<span data-posleft="-10" data-postop="-31"></span>
+<span data-posleft="-10" data-postop="-28"></span>
+<span data-posleft="-10" data-postop="-16"></span>
+<span data-posleft="-10" data-postop="-10"></span>
+<span data-posleft="-10" data-postop="-7"></span>
+<span data-posleft="-10" data-postop="-4"></span>
+<span data-posleft="-10" data-postop="-1"></span>
+<span data-posleft="-10" data-postop="2"></span>
+<span data-posleft="-10" data-postop="5"></span>
+<span data-posleft="-10" data-postop="11"></span>
+<span data-posleft="-10" data-postop="14"></span>
+<span data-posleft="-10" data-postop="17"></span>
+<span data-posleft="-10" data-postop="26"></span>
+<span data-posleft="-10" data-postop="29"></span>
+<span data-posleft="-10" data-postop="32"></span>
+<span data-posleft="-10" data-postop="35"></span>
+<span data-posleft="-10" data-postop="41"></span>
+<span data-posleft="-10" data-postop="44"></span>
+<span data-posleft="-10" data-postop="53"></span>
+<span data-posleft="-10" data-postop="56"></span>
+<span data-posleft="-10" data-postop="62"></span>
+<span data-posleft="-10" data-postop="71"></span>
+<span data-posleft="-10" data-postop="83"></span>
+
+<span data-posleft="-7" data-postop="-100"></span>
+<span data-posleft="-7" data-postop="-97"></span>
+<span data-posleft="-7" data-postop="-94"></span>
+<span data-posleft="-7" data-postop="-82"></span>
+<span data-posleft="-7" data-postop="-64"></span>
+<span data-posleft="-7" data-postop="-61"></span>
+<span data-posleft="-7" data-postop="-58"></span>
+<span data-posleft="-7" data-postop="-49"></span>
+<span data-posleft="-7" data-postop="-43"></span>
+<span data-posleft="-7" data-postop="-40"></span>
+<span data-posleft="-7" data-postop="-37"></span>
+<span data-posleft="-7" data-postop="-34"></span>
+<span data-posleft="-7" data-postop="-28"></span>
+<span data-posleft="-7" data-postop="-25"></span>
+<span data-posleft="-7" data-postop="-22"></span>
+<span data-posleft="-7" data-postop="-19"></span>
+<span data-posleft="-7" data-postop="-13"></span>
+<span data-posleft="-7" data-postop="-7"></span>
+<span data-posleft="-7" data-postop="-4"></span>
+<span data-posleft="-7" data-postop="-1"></span>
+<span data-posleft="-7" data-postop="2"></span>
+<span data-posleft="-7" data-postop="11"></span>
+<span data-posleft="-7" data-postop="14"></span>
+<span data-posleft="-7" data-postop="17"></span>
+<span data-posleft="-7" data-postop="20"></span>
+<span data-posleft="-7" data-postop="23"></span>
+<span data-posleft="-7" data-postop="29"></span>
+<span data-posleft="-7" data-postop="32"></span>
+<span data-posleft="-7" data-postop="38"></span>
+<span data-posleft="-7" data-postop="41"></span>
+<span data-posleft="-7" data-postop="44"></span>
+<span data-posleft="-7" data-postop="47"></span>
+<span data-posleft="-7" data-postop="53"></span>
+<span data-posleft="-7" data-postop="62"></span>
+<span data-posleft="-7" data-postop="80"></span>
+<span data-posleft="-7" data-postop="95"></span>
+                
+<span data-posleft="-4" data-postop="-94"></span>
+<span data-posleft="-4" data-postop="-82"></span>
+<span data-posleft="-4" data-postop="-70"></span>
+<span data-posleft="-4" data-postop="-67"></span>
+<span data-posleft="-4" data-postop="-58"></span>
+<span data-posleft="-4" data-postop="-52"></span>
+<span data-posleft="-4" data-postop="-31"></span>
+<span data-posleft="-4" data-postop="-28"></span>
+<span data-posleft="-4" data-postop="-25"></span>
+<span data-posleft="-4" data-postop="-22"></span>
+<span data-posleft="-4" data-postop="-19"></span>
+<span data-posleft="-4" data-postop="-13"></span>
+<span data-posleft="-4" data-postop="-10"></span>
+<span data-posleft="-4" data-postop="-4"></span>
+<span data-posleft="-4" data-postop="-1"></span>
+<span data-posleft="-4" data-postop="2"></span>
+<span data-posleft="-4" data-postop="5"></span>
+<span data-posleft="-4" data-postop="8"></span>
+<span data-posleft="-4" data-postop="17"></span>
+<span data-posleft="-4" data-postop="20"></span>
+<span data-posleft="-4" data-postop="23"></span>
+<span data-posleft="-4" data-postop="26"></span>
+<span data-posleft="-4" data-postop="29"></span>
+<span data-posleft="-4" data-postop="32"></span>
+<span data-posleft="-4" data-postop="35"></span>
+<span data-posleft="-4" data-postop="38"></span>
+<span data-posleft="-4" data-postop="41"></span>
+<span data-posleft="-4" data-postop="71"></span>
+<span data-posleft="-4" data-postop="74"></span>
+<span data-posleft="-4" data-postop="83"></span>
+<span data-posleft="-4" data-postop="92"></span>
+                     
+<span data-posleft="-1" data-postop="-91"></span>
+<span data-posleft="-1" data-postop="-88"></span>
+<span data-posleft="-1" data-postop="-73"></span>
+<span data-posleft="-1" data-postop="-61"></span>
+<span data-posleft="-1" data-postop="-55"></span>
+<span data-posleft="-1" data-postop="-43"></span>
+<span data-posleft="-1" data-postop="-40"></span>
+<span data-posleft="-1" data-postop="-34"></span>
+<span data-posleft="-1" data-postop="-28"></span>
+<span data-posleft="-1" data-postop="-25"></span>
+<span data-posleft="-1" data-postop="-22"></span>
+<span data-posleft="-1" data-postop="-19"></span>
+<span data-posleft="-1" data-postop="-16"></span>
+<span data-posleft="-1" data-postop="-13"></span>
+<span data-posleft="-1" data-postop="-10"></span>
+<span data-posleft="-1" data-postop="-4"></span>
+<span data-posleft="-1" data-postop="-1"></span>
+<span data-posleft="-1" data-postop="2"></span>
+<span data-posleft="-1" data-postop="5"></span>
+<span data-posleft="-1" data-postop="11"></span>
+<span data-posleft="-1" data-postop="14"></span>
+<span data-posleft="-1" data-postop="17"></span>
+<span data-posleft="-1" data-postop="23"></span>
+<span data-posleft="-1" data-postop="26"></span>
+<span data-posleft="-1" data-postop="29"></span>
+<span data-posleft="-1" data-postop="35"></span>
+<span data-posleft="-1" data-postop="38"></span>
+<span data-posleft="-1" data-postop="41"></span>
+<span data-posleft="-1" data-postop="44"></span>
+<span data-posleft="-1" data-postop="47"></span>
+<span data-posleft="-1" data-postop="50"></span>
+<span data-posleft="-1" data-postop="56"></span>
+<span data-posleft="-1" data-postop="59"></span>
+<span data-posleft="-1" data-postop="83"></span>
+<span data-posleft="-1" data-postop="89"></span>
+            
+<span data-posleft="2" data-postop="-85"></span>
+<span data-posleft="2" data-postop="-79"></span>
+<span data-posleft="2" data-postop="-73"></span>
+<span data-posleft="2" data-postop="-58"></span>
+<span data-posleft="2" data-postop="-49"></span>
+<span data-posleft="2" data-postop="-28"></span>
+<span data-posleft="2" data-postop="-25"></span>
+<span data-posleft="2" data-postop="-22"></span>
+<span data-posleft="2" data-postop="-19"></span>
+<span data-posleft="2" data-postop="-16"></span>
+<span data-posleft="2" data-postop="-13"></span>
+<span data-posleft="2" data-postop="-7"></span>
+<span data-posleft="2" data-postop="-4"></span>
+<span data-posleft="2" data-postop="-1"></span>
+<span data-posleft="2" data-postop="2"></span>               
+<span data-posleft="2" data-postop="5"></span>
+<span data-posleft="2" data-postop="8"></span>
+<span data-posleft="2" data-postop="11"></span>
+<span data-posleft="2" data-postop="14"></span>
+<span data-posleft="2" data-postop="20"></span>
+<span data-posleft="2" data-postop="23"></span>
+<span data-posleft="2" data-postop="26"></span>
+<span data-posleft="2" data-postop="32"></span>
+<span data-posleft="2" data-postop="35"></span>
+<span data-posleft="2" data-postop="41"></span>
+<span data-posleft="2" data-postop="44"></span>
+<span data-posleft="2" data-postop="53"></span>
+<span data-posleft="2" data-postop="71"></span>
+<span data-posleft="2" data-postop="77"></span>
+<span data-posleft="2" data-postop="86"></span>
+                
+<span data-posleft="5" data-postop="-91"></span>
+<span data-posleft="5" data-postop="-64"></span>
+<span data-posleft="5" data-postop="-49"></span>
+<span data-posleft="5" data-postop="-43"></span>
+<span data-posleft="5" data-postop="-31"></span>
+<span data-posleft="5" data-postop="-28"></span>
+<span data-posleft="5" data-postop="-25"></span>
+<span data-posleft="5" data-postop="-22"></span>
+<span data-posleft="5" data-postop="-19"></span>
+<span data-posleft="5" data-postop="-16"></span>
+<span data-posleft="5" data-postop="-13"></span>
+<span data-posleft="5" data-postop="-10"></span>
+<span data-posleft="5" data-postop="-7"></span>
+<span data-posleft="5" data-postop="-4"></span>
+<span data-posleft="5" data-postop="-1"></span>
+<span data-posleft="5" data-postop="2"></span>
+<span data-posleft="5" data-postop="11"></span>
+<span data-posleft="5" data-postop="14"></span>
+<span data-posleft="5" data-postop="20"></span>
+<span data-posleft="5" data-postop="23"></span>
+<span data-posleft="5" data-postop="26"></span>
+<span data-posleft="5" data-postop="29"></span>
+<span data-posleft="5" data-postop="35"></span>
+<span data-posleft="5" data-postop="44"></span>
+<span data-posleft="5" data-postop="53"></span>
+<span data-posleft="5" data-postop="62"></span>
+<span data-posleft="5" data-postop="77"></span>
+<span data-posleft="5" data-postop="92"></span>
+<span data-posleft="5" data-postop="95"></span>
+
+<span data-posleft="8" data-postop="-94"></span>
+<span data-posleft="8" data-postop="-88"></span>
+<span data-posleft="8" data-postop="-64"></span>
+<span data-posleft="8" data-postop="-58"></span>
+<span data-posleft="8" data-postop="-55"></span>
+<span data-posleft="8" data-postop="-52"></span>
+<span data-posleft="8" data-postop="-46"></span>
+<span data-posleft="8" data-postop="-43"></span>
+<span data-posleft="8" data-postop="-37"></span>
+<span data-posleft="8" data-postop="-25"></span>
+<span data-posleft="8" data-postop="-22"></span>
+<span data-posleft="8" data-postop="-16"></span>
+<span data-posleft="8" data-postop="-13"></span>
+<span data-posleft="8" data-postop="-7"></span>
+<span data-posleft="8" data-postop="-4"></span>
+<span data-posleft="8" data-postop="-1"></span>
+<span data-posleft="8" data-postop="2"></span>
+<span data-posleft="8" data-postop="5"></span>
+<span data-posleft="8" data-postop="8"></span>
+<span data-posleft="8" data-postop="11"></span>        
+<span data-posleft="8" data-postop="14"></span>
+<span data-posleft="8" data-postop="17"></span>
+<span data-posleft="8" data-postop="20"></span>
+<span data-posleft="8" data-postop="26"></span>
+<span data-posleft="8" data-postop="32"></span>
+<span data-posleft="8" data-postop="35"></span>
+<span data-posleft="8" data-postop="38"></span>
+<span data-posleft="8" data-postop="47"></span>
+<span data-posleft="8" data-postop="53"></span>
+<span data-posleft="8" data-postop="56"></span>
+<span data-posleft="8" data-postop="65"></span>
+<span data-posleft="8" data-postop="68"></span>
+<span data-posleft="8" data-postop="86"></span>
+<span data-posleft="8" data-postop="95"></span>
+
+<span data-posleft="11" data-postop="-97"></span>
+<span data-posleft="11" data-postop="-79"></span>
+<span data-posleft="11" data-postop="-61"></span>
+<span data-posleft="11" data-postop="-55"></span>
+<span data-posleft="11" data-postop="-40"></span>
+<span data-posleft="11" data-postop="-37"></span>
+<span data-posleft="11" data-postop="-34"></span>
+<span data-posleft="11" data-postop="-28"></span>
+<span data-posleft="11" data-postop="-22"></span>
+<span data-posleft="11" data-postop="-16"></span>
+<span data-posleft="11" data-postop="-10"></span>
+<span data-posleft="11" data-postop="-7"></span>
+<span data-posleft="11" data-postop="2"></span>
+<span data-posleft="11" data-postop="8"></span>
+<span data-posleft="11" data-postop="11"></span>
+<span data-posleft="11" data-postop="20"></span>
+<span data-posleft="11" data-postop="23"></span>
+<span data-posleft="11" data-postop="26"></span>
+<span data-posleft="11" data-postop="29"></span>
+<span data-posleft="11" data-postop="32"></span>
+<span data-posleft="11" data-postop="44"></span>
+<span data-posleft="11" data-postop="56"></span>
+<span data-posleft="11" data-postop="59"></span>
+<span data-posleft="11" data-postop="71"></span>
+<span data-posleft="11" data-postop="77"></span>
+                
+<span data-posleft="14" data-postop="-85"></span>
+<span data-posleft="14" data-postop="-82"></span>
+<span data-posleft="14" data-postop="-79"></span>
+<span data-posleft="14" data-postop="-76"></span>
+<span data-posleft="14" data-postop="-64"></span>
+<span data-posleft="14" data-postop="-58"></span>
+<span data-posleft="14" data-postop="-43"></span>
+<span data-posleft="14" data-postop="-40"></span>
+<span data-posleft="14" data-postop="-37"></span>
+<span data-posleft="14" data-postop="-25"></span>
+<span data-posleft="14" data-postop="-13"></span>
+<span data-posleft="14" data-postop="-7"></span>
+<span data-posleft="14" data-postop="-4"></span>
+<span data-posleft="14" data-postop="5"></span>
+<span data-posleft="14" data-postop="11"></span>
+<span data-posleft="14" data-postop="14"></span>
+<span data-posleft="14" data-postop="17"></span>
+<span data-posleft="14" data-postop="20"></span>
+<span data-posleft="14" data-postop="23"></span>
+<span data-posleft="14" data-postop="26"></span>
+<span data-posleft="14" data-postop="35"></span>
+<span data-posleft="14" data-postop="38"></span>
+<span data-posleft="14" data-postop="50"></span>
+<span data-posleft="14" data-postop="53"></span>
+<span data-posleft="14" data-postop="56"></span>
+<span data-posleft="14" data-postop="62"></span>
+<span data-posleft="14" data-postop="65"></span>
+<span data-posleft="14" data-postop="71"></span>
+<span data-posleft="14" data-postop="74"></span>
+<span data-posleft="14" data-postop="80"></span>
+<span data-posleft="14" data-postop="92"></span>
+<span data-posleft="14" data-postop="95"></span>
+                
+<span data-posleft="17" data-postop="-94"></span>
+<span data-posleft="17" data-postop="-79"></span>
+<span data-posleft="17" data-postop="-76"></span>
+<span data-posleft="17" data-postop="-58"></span>
+<span data-posleft="17" data-postop="-55"></span>
+<span data-posleft="17" data-postop="-52"></span>
+<span data-posleft="17" data-postop="-31"></span>
+<span data-posleft="17" data-postop="-28"></span>
+<span data-posleft="17" data-postop="-22"></span>
+<span data-posleft="17" data-postop="-19"></span>
+<span data-posleft="17" data-postop="-16"></span>
+<span data-posleft="17" data-postop="-7"></span>
+<span data-posleft="17" data-postop="-4"></span>
+<span data-posleft="17" data-postop="-1"></span>
+<span data-posleft="17" data-postop="2"></span>
+<span data-posleft="17" data-postop="5"></span>
+<span data-posleft="17" data-postop="8"></span>
+<span data-posleft="17" data-postop="17"></span>
+<span data-posleft="17" data-postop="20"></span>
+<span data-posleft="17" data-postop="32"></span>
+<span data-posleft="17" data-postop="47"></span>
+<span data-posleft="17" data-postop="50"></span>
+<span data-posleft="17" data-postop="53"></span>
+<span data-posleft="17" data-postop="56"></span>
+<span data-posleft="17" data-postop="71"></span>
+<span data-posleft="17" data-postop="74"></span>
+<span data-posleft="17" data-postop="80"></span>
+<span data-posleft="17" data-postop="83"></span>
+<span data-posleft="17" data-postop="98"></span>
+                
+<span data-posleft="20" data-postop="-88"></span>
+<span data-posleft="20" data-postop="-79"></span>
+<span data-posleft="20" data-postop="-73"></span>
+<span data-posleft="20" data-postop="-70"></span>
+<span data-posleft="20" data-postop="-64"></span>
+<span data-posleft="20" data-postop="-55"></span>
+<span data-posleft="20" data-postop="-49"></span>
+<span data-posleft="20" data-postop="-43"></span>
+<span data-posleft="20" data-postop="-40"></span>
+<span data-posleft="20" data-postop="-28"></span>
+<span data-posleft="20" data-postop="-25"></span>
+<span data-posleft="20" data-postop="-13"></span>
+<span data-posleft="20" data-postop="-7"></span>
+<span data-posleft="20" data-postop="2"></span>
+<span data-posleft="20" data-postop="5"></span>
+<span data-posleft="20" data-postop="8"></span>
+<span data-posleft="20" data-postop="11"></span>
+<span data-posleft="20" data-postop="17"></span>
+<span data-posleft="20" data-postop="26"></span>
+<span data-posleft="20" data-postop="29"></span>
+<span data-posleft="20" data-postop="35"></span>
+<span data-posleft="20" data-postop="38"></span>
+<span data-posleft="20" data-postop="41"></span>
+<span data-posleft="20" data-postop="53"></span>
+<span data-posleft="20" data-postop="56"></span>
+<span data-posleft="20" data-postop="59"></span>
+<span data-posleft="20" data-postop="65"></span>
+<span data-posleft="20" data-postop="77"></span>
+<span data-posleft="20" data-postop="92"></span>
+
+<span data-posleft="23" data-postop="-85"></span>
+<span data-posleft="23" data-postop="-70"></span>
+<span data-posleft="23" data-postop="-64"></span>
+<span data-posleft="23" data-postop="-61"></span>
+<span data-posleft="23" data-postop="-49"></span>
+<span data-posleft="23" data-postop="-46"></span>
+<span data-posleft="23" data-postop="-40"></span>
+<span data-posleft="23" data-postop="-28"></span>
+<span data-posleft="23" data-postop="-22"></span>
+<span data-posleft="23" data-postop="-16"></span>
+<span data-posleft="23" data-postop="-13"></span>
+<span data-posleft="23" data-postop="-10"></span>
+<span data-posleft="23" data-postop="-4"></span>
+<span data-posleft="23" data-postop="2"></span>
+<span data-posleft="23" data-postop="5"></span>
+<span data-posleft="23" data-postop="8"></span>
+<span data-posleft="23" data-postop="14"></span>
+<span data-posleft="23" data-postop="17"></span>
+<span data-posleft="23" data-postop="23"></span>
+<span data-posleft="23" data-postop="38"></span>
+<span data-posleft="23" data-postop="44"></span>
+<span data-posleft="23" data-postop="47"></span>
+<span data-posleft="23" data-postop="56"></span>
+<span data-posleft="23" data-postop="65"></span>
+<span data-posleft="23" data-postop="71"></span>
+<span data-posleft="23" data-postop="80"></span>
+<span data-posleft="23" data-postop="83"></span>
+<span data-posleft="23" data-postop="95"></span>
+    
+<span data-posleft="26" data-postop="-97"></span>
+<span data-posleft="26" data-postop="-70"></span>
+<span data-posleft="26" data-postop="-58"></span>
+<span data-posleft="26" data-postop="-52"></span>
+<span data-posleft="26" data-postop="-46"></span>
+<span data-posleft="26" data-postop="-37"></span>
+<span data-posleft="26" data-postop="-31"></span>
+<span data-posleft="26" data-postop="-28"></span>
+<span data-posleft="26" data-postop="-4"></span>
+<span data-posleft="26" data-postop="2"></span>
+<span data-posleft="26" data-postop="5"></span>
+<span data-posleft="26" data-postop="8"></span>
+<span data-posleft="26" data-postop="14"></span>
+<span data-posleft="26" data-postop="17"></span>
+<span data-posleft="26" data-postop="29"></span>
+<span data-posleft="26" data-postop="35"></span>
+<span data-posleft="26" data-postop="44"></span>
+<span data-posleft="26" data-postop="47"></span>
+<span data-posleft="26" data-postop="50"></span>
+<span data-posleft="26" data-postop="56"></span>
+<span data-posleft="26" data-postop="59"></span>
+<span data-posleft="26" data-postop="65"></span>
+<span data-posleft="26" data-postop="86"></span>
+<span data-posleft="26" data-postop="95"></span>
+ 
+<span data-posleft="29" data-postop="-76"></span>
+<span data-posleft="29" data-postop="-70"></span>
+<span data-posleft="29" data-postop="-58"></span>
+<span data-posleft="29" data-postop="-37"></span>
+<span data-posleft="29" data-postop="-34"></span>
+<span data-posleft="29" data-postop="-7"></span>
+<span data-posleft="29" data-postop="-4"></span>
+<span data-posleft="29" data-postop="35"></span>
+<span data-posleft="29" data-postop="47"></span>
+<span data-posleft="29" data-postop="50"></span>
+<span data-posleft="29" data-postop="56"></span>
+<span data-posleft="29" data-postop="68"></span>
+<span data-posleft="29" data-postop="83"></span>
+<span data-posleft="29" data-postop="92"></span>
+         
+<span data-posleft="32" data-postop="-94"></span>
+<span data-posleft="32" data-postop="-73"></span>
+<span data-posleft="32" data-postop="-61"></span>
+<span data-posleft="32" data-postop="-58"></span>
+<span data-posleft="32" data-postop="-43"></span>
+<span data-posleft="32" data-postop="-37"></span>
+<span data-posleft="32" data-postop="-31"></span>
+<span data-posleft="32" data-postop="-19"></span>
+<span data-posleft="32" data-postop="-13"></span>
+<span data-posleft="32" data-postop="-10"></span>
+<span data-posleft="32" data-postop="-7"></span>
+<span data-posleft="32" data-postop="-1"></span>
+<span data-posleft="32" data-postop="2"></span>
+<span data-posleft="32" data-postop="11"></span>
+<span data-posleft="32" data-postop="14"></span>
+<span data-posleft="32" data-postop="20"></span>
+<span data-posleft="32" data-postop="23"></span>
+<span data-posleft="32" data-postop="26"></span>
+<span data-posleft="32" data-postop="32"></span>
+<span data-posleft="32" data-postop="41"></span>
+<span data-posleft="32" data-postop="47"></span>
+<span data-posleft="32" data-postop="56"></span>
+<span data-posleft="32" data-postop="65"></span>
+<span data-posleft="32" data-postop="83"></span>
+           
+<span data-posleft="35" data-postop="-94"></span>
+<span data-posleft="35" data-postop="-76"></span>
+<span data-posleft="35" data-postop="-73"></span>
+<span data-posleft="35" data-postop="-67"></span>
+<span data-posleft="35" data-postop="-52"></span>
+<span data-posleft="35" data-postop="-46"></span>
+<span data-posleft="35" data-postop="-31"></span>
+<span data-posleft="35" data-postop="-22"></span>
+<span data-posleft="35" data-postop="-19"></span>
+<span data-posleft="35" data-postop="-13"></span>
+<span data-posleft="35" data-postop="-1"></span>
+<span data-posleft="35" data-postop="2"></span>
+<span data-posleft="35" data-postop="5"></span>
+<span data-posleft="35" data-postop="8"></span>
+<span data-posleft="35" data-postop="11"></span>
+<span data-posleft="35" data-postop="14"></span>
+<span data-posleft="35" data-postop="20"></span>
+<span data-posleft="35" data-postop="26"></span>
+<span data-posleft="35" data-postop="32"></span>
+<span data-posleft="35" data-postop="35"></span>
+<span data-posleft="35" data-postop="56"></span>
+<span data-posleft="35" data-postop="68"></span>
+<span data-posleft="35" data-postop="71"></span>
+<span data-posleft="35" data-postop="83"></span>
+<span data-posleft="35" data-postop="92"></span>
+              
+<span data-posleft="38" data-postop="-76"></span>
+<span data-posleft="38" data-postop="-70"></span>
+<span data-posleft="38" data-postop="-61"></span>
+<span data-posleft="38" data-postop="-58"></span>
+<span data-posleft="38" data-postop="-52"></span>
+<span data-posleft="38" data-postop="-37"></span>
+<span data-posleft="38" data-postop="-34"></span>
+<span data-posleft="38" data-postop="-25"></span>
+<span data-posleft="38" data-postop="-22"></span>
+<span data-posleft="38" data-postop="-13"></span>
+<span data-posleft="38" data-postop="-4"></span>
+<span data-posleft="38" data-postop="2"></span>
+<span data-posleft="38" data-postop="5"></span>
+<span data-posleft="38" data-postop="8"></span>
+<span data-posleft="38" data-postop="11"></span>
+<span data-posleft="38" data-postop="14"></span>
+<span data-posleft="38" data-postop="20"></span>
+<span data-posleft="38" data-postop="23"></span>
+<span data-posleft="38" data-postop="26"></span>
+<span data-posleft="38" data-postop="29"></span>
+<span data-posleft="38" data-postop="41"></span>
+<span data-posleft="38" data-postop="62"></span>
+               
+<span data-posleft="41" data-postop="-79"></span>
+<span data-posleft="41" data-postop="-76"></span>
+<span data-posleft="41" data-postop="-64"></span>
+<span data-posleft="41" data-postop="-61"></span>
+<span data-posleft="41" data-postop="-31"></span>
+<span data-posleft="41" data-postop="-28"></span>
+<span data-posleft="41" data-postop="-25"></span>
+<span data-posleft="41" data-postop="-22"></span>
+<span data-posleft="41" data-postop="-19"></span>
+<span data-posleft="41" data-postop="-16"></span>
+<span data-posleft="41" data-postop="-10"></span>
+<span data-posleft="41" data-postop="-7"></span>
+<span data-posleft="41" data-postop="8"></span>
+<span data-posleft="41" data-postop="11"></span>
+<span data-posleft="41" data-postop="14"></span>
+<span data-posleft="41" data-postop="17"></span>
+<span data-posleft="41" data-postop="20"></span>
+<span data-posleft="41" data-postop="23"></span>
+<span data-posleft="41" data-postop="53"></span>
+<span data-posleft="41" data-postop="59"></span>
+<span data-posleft="41" data-postop="65"></span>
+<span data-posleft="41" data-postop="77"></span>
+<span data-posleft="41" data-postop="89"></span>
+        
+<span data-posleft="44" data-postop="-85"></span>
+<span data-posleft="44" data-postop="-64"></span>
+<span data-posleft="44" data-postop="-58"></span>
+<span data-posleft="44" data-postop="-31"></span>
+<span data-posleft="44" data-postop="-22"></span>
+<span data-posleft="44" data-postop="-19"></span>
+<span data-posleft="44" data-postop="-16"></span>
+<span data-posleft="44" data-postop="-7"></span>
+<span data-posleft="44" data-postop="-1"></span>
+<span data-posleft="44" data-postop="5"></span>
+<span data-posleft="44" data-postop="8"></span>
+<span data-posleft="44" data-postop="23"></span>
+<span data-posleft="44" data-postop="29"></span>
+<span data-posleft="44" data-postop="38"></span>
+<span data-posleft="44" data-postop="44"></span>
+<span data-posleft="44" data-postop="50"></span>
+<span data-posleft="44" data-postop="56"></span>
+<span data-posleft="44" data-postop="59"></span>
+<span data-posleft="44" data-postop="71"></span>
+<span data-posleft="44" data-postop="74"></span>
+<span data-posleft="44" data-postop="86"></span>
+               
+<span data-posleft="47" data-postop="-88"></span>
+<span data-posleft="47" data-postop="-76"></span>
+<span data-posleft="47" data-postop="-73"></span>
+<span data-posleft="47" data-postop="-64"></span>
+<span data-posleft="47" data-postop="-61"></span>
+<span data-posleft="47" data-postop="-52"></span>
+<span data-posleft="47" data-postop="-46"></span>
+<span data-posleft="47" data-postop="-34"></span>
+<span data-posleft="47" data-postop="-16"></span>
+<span data-posleft="47" data-postop="-10"></span>
+<span data-posleft="47" data-postop="-7"></span>
+<span data-posleft="47" data-postop="-4"></span>
+<span data-posleft="47" data-postop="-1"></span>
+<span data-posleft="47" data-postop="2"></span>
+<span data-posleft="47" data-postop="5"></span>
+<span data-posleft="47" data-postop="11"></span>
+<span data-posleft="47" data-postop="14"></span>
+<span data-posleft="47" data-postop="17"></span>
+<span data-posleft="47" data-postop="20"></span>
+<span data-posleft="47" data-postop="26"></span>
+<span data-posleft="47" data-postop="38"></span>
+<span data-posleft="47" data-postop="41"></span>
+<span data-posleft="47" data-postop="44"></span>
+<span data-posleft="47" data-postop="53"></span>
+<span data-posleft="47" data-postop="56"></span>
+<span data-posleft="47" data-postop="59"></span>
+<span data-posleft="47" data-postop="71"></span>
+<span data-posleft="47" data-postop="74"></span>
+<span data-posleft="47" data-postop="86"></span>
+               
+<span data-posleft="50" data-postop="-73"></span>
+<span data-posleft="50" data-postop="-64"></span>
+<span data-posleft="50" data-postop="-61"></span>
+<span data-posleft="50" data-postop="-55"></span>
+<span data-posleft="50" data-postop="-52"></span>
+<span data-posleft="50" data-postop="-43"></span>
+<span data-posleft="50" data-postop="-4"></span>
+<span data-posleft="50" data-postop="2"></span>
+<span data-posleft="50" data-postop="8"></span>
+<span data-posleft="50" data-postop="14"></span>
+<span data-posleft="50" data-postop="38"></span>
+<span data-posleft="50" data-postop="41"></span>
+<span data-posleft="50" data-postop="44"></span>
+<span data-posleft="50" data-postop="50"></span>
+<span data-posleft="50" data-postop="56"></span>
+<span data-posleft="50" data-postop="62"></span>
+<span data-posleft="50" data-postop="65"></span>
+<span data-posleft="50" data-postop="68"></span>
+               
+<span data-posleft="53" data-postop="-73"></span>
+<span data-posleft="53" data-postop="-70"></span>
+<span data-posleft="53" data-postop="-67"></span>
+<span data-posleft="53" data-postop="-61"></span>
+<span data-posleft="53" data-postop="-58"></span>
+<span data-posleft="53" data-postop="-55"></span>
+<span data-posleft="53" data-postop="-46"></span>
+<span data-posleft="53" data-postop="-19"></span>
+<span data-posleft="53" data-postop="-10"></span>
+<span data-posleft="53" data-postop="-7"></span>
+<span data-posleft="53" data-postop="-1"></span>
+<span data-posleft="53" data-postop="5"></span>
+<span data-posleft="53" data-postop="8"></span>
+<span data-posleft="53" data-postop="14"></span>
+<span data-posleft="53" data-postop="17"></span>
+<span data-posleft="53" data-postop="20"></span>
+<span data-posleft="53" data-postop="62"></span>
+<span data-posleft="53" data-postop="65"></span>
+<span data-posleft="53" data-postop="68"></span>
+<span data-posleft="53" data-postop="71"></span>
+<span data-posleft="53" data-postop="80"></span>
+               
+<span data-posleft="56" data-postop="-79"></span>
+<span data-posleft="56" data-postop="-70"></span>
+<span data-posleft="56" data-postop="-58"></span>
+<span data-posleft="56" data-postop="-55"></span>
+<span data-posleft="56" data-postop="-52"></span>
+<span data-posleft="56" data-postop="-49"></span>
+<span data-posleft="56" data-postop="-40"></span>
+<span data-posleft="56" data-postop="-34"></span>
+<span data-posleft="56" data-postop="-31"></span>
+<span data-posleft="56" data-postop="-28"></span>
+<span data-posleft="56" data-postop="-25"></span>
+<span data-posleft="56" data-postop="-22"></span>
+<span data-posleft="56" data-postop="-16"></span>
+<span data-posleft="56" data-postop="-13"></span>
+<span data-posleft="56" data-postop="-10"></span>
+<span data-posleft="56" data-postop="-7"></span>
+<span data-posleft="56" data-postop="-4"></span>
+<span data-posleft="56" data-postop="5"></span>
+<span data-posleft="56" data-postop="11"></span>
+<span data-posleft="56" data-postop="14"></span>
+<span data-posleft="56" data-postop="20"></span>
+<span data-posleft="56" data-postop="23"></span>
+<span data-posleft="56" data-postop="26"></span>
+<span data-posleft="56" data-postop="29"></span>
+<span data-posleft="56" data-postop="35"></span>
+<span data-posleft="56" data-postop="38"></span>
+<span data-posleft="56" data-postop="41"></span>
+<span data-posleft="56" data-postop="56"></span>
+<span data-posleft="56" data-postop="62"></span>
+<span data-posleft="56" data-postop="68"></span>
+<span data-posleft="56" data-postop="71"></span>
+<span data-posleft="56" data-postop="80"></span>
+            
+<span data-posleft="59" data-postop="-79"></span>
+<span data-posleft="59" data-postop="-76"></span>
+<span data-posleft="59" data-postop="-70"></span>
+<span data-posleft="59" data-postop="-61"></span>
+<span data-posleft="59" data-postop="-58"></span>
+<span data-posleft="59" data-postop="-55"></span>
+<span data-posleft="59" data-postop="-46"></span>
+<span data-posleft="59" data-postop="-37"></span>
+<span data-posleft="59" data-postop="-34"></span>
+<span data-posleft="59" data-postop="-31"></span>
+<span data-posleft="59" data-postop="-28"></span>
+<span data-posleft="59" data-postop="-22"></span>
+<span data-posleft="59" data-postop="-19"></span>
+<span data-posleft="59" data-postop="-7"></span>
+<span data-posleft="59" data-postop="-4"></span>
+<span data-posleft="59" data-postop="-1"></span>
+<span data-posleft="59" data-postop="2"></span>
+<span data-posleft="59" data-postop="8"></span>
+<span data-posleft="59" data-postop="20"></span>
+<span data-posleft="59" data-postop="29"></span>
+<span data-posleft="59" data-postop="32"></span>
+<span data-posleft="59" data-postop="44"></span>
+<span data-posleft="59" data-postop="59"></span>
+              
+<span data-posleft="62" data-postop="-67"></span>
+<span data-posleft="62" data-postop="-64"></span>
+<span data-posleft="62" data-postop="-58"></span>
+<span data-posleft="62" data-postop="-55"></span>
+<span data-posleft="62" data-postop="-52"></span>
+<span data-posleft="62" data-postop="-43"></span>
+<span data-posleft="62" data-postop="-40"></span>
+<span data-posleft="62" data-postop="-37"></span>
+<span data-posleft="62" data-postop="-34"></span>
+<span data-posleft="62" data-postop="-10"></span>
+<span data-posleft="62" data-postop="-4"></span>
+<span data-posleft="62" data-postop="-1"></span>
+<span data-posleft="62" data-postop="2"></span>
+<span data-posleft="62" data-postop="8"></span>
+<span data-posleft="62" data-postop="11"></span>
+<span data-posleft="62" data-postop="14"></span>
+<span data-posleft="62" data-postop="50"></span>
+<span data-posleft="62" data-postop="59"></span>
+<span data-posleft="62" data-postop="65"></span>
+<span data-posleft="62" data-postop="71"></span>
+
+<span data-posleft="65" data-postop="-73"></span>
+<span data-posleft="65" data-postop="-67"></span>
+<span data-posleft="65" data-postop="-58"></span>
+<span data-posleft="65" data-postop="-43"></span>
+<span data-posleft="65" data-postop="-37"></span>
+<span data-posleft="65" data-postop="-28"></span>
+<span data-posleft="65" data-postop="-25"></span>
+<span data-posleft="65" data-postop="-16"></span>
+<span data-posleft="65" data-postop="-4"></span>
+<span data-posleft="65" data-postop="-1"></span>
+<span data-posleft="65" data-postop="2"></span>
+<span data-posleft="65" data-postop="8"></span>
+<span data-posleft="65" data-postop="17"></span>
+<span data-posleft="65" data-postop="20"></span>
+<span data-posleft="65" data-postop="26"></span>
+<span data-posleft="65" data-postop="32"></span>
+<span data-posleft="65" data-postop="59"></span>
+<span data-posleft="65" data-postop="62"></span>
+<span data-posleft="65" data-postop="65"></span>
+
+<span data-posleft="68" data-postop="-70"></span>
+<span data-posleft="68" data-postop="-67"></span>
+<span data-posleft="68" data-postop="-64"></span>
+<span data-posleft="68" data-postop="-58"></span>
+<span data-posleft="68" data-postop="-49"></span>
+<span data-posleft="68" data-postop="-43"></span>
+<span data-posleft="68" data-postop="-37"></span>
+<span data-posleft="68" data-postop="-22"></span>
+<span data-posleft="68" data-postop="-16"></span>
+<span data-posleft="68" data-postop="-13"></span>
+<span data-posleft="68" data-postop="-10"></span>
+<span data-posleft="68" data-postop="-7"></span>
+<span data-posleft="68" data-postop="-1"></span>
+<span data-posleft="68" data-postop="8"></span>
+<span data-posleft="68" data-postop="11"></span>
+<span data-posleft="68" data-postop="17"></span>
+<span data-posleft="68" data-postop="20"></span>
+<span data-posleft="68" data-postop="32"></span>
+<span data-posleft="68" data-postop="35"></span>
+<span data-posleft="68" data-postop="38"></span>
+<span data-posleft="68" data-postop="41"></span>
+<span data-posleft="68" data-postop="44"></span>
+<span data-posleft="68" data-postop="68"></span>
+<span data-posleft="68" data-postop="71"></span>
+               
+<span data-posleft="71" data-postop="-70"></span>
+<span data-posleft="71" data-postop="-52"></span>
+<span data-posleft="71" data-postop="-34"></span>
+<span data-posleft="71" data-postop="-28"></span>
+<span data-posleft="71" data-postop="-25"></span>
+<span data-posleft="71" data-postop="-19"></span>
+<span data-posleft="71" data-postop="-13"></span>
+<span data-posleft="71" data-postop="-7"></span>
+<span data-posleft="71" data-postop="-1"></span>
+<span data-posleft="71" data-postop="11"></span>
+<span data-posleft="71" data-postop="14"></span>
+<span data-posleft="71" data-postop="41"></span>
+<span data-posleft="71" data-postop="56"></span>
+                 
+<span data-posleft="74" data-postop="-55"></span>
+<span data-posleft="74" data-postop="-52"></span>
+<span data-posleft="74" data-postop="-22"></span>
+<span data-posleft="74" data-postop="-19"></span>
+<span data-posleft="74" data-postop="-16"></span>
+<span data-posleft="74" data-postop="-10"></span>
+<span data-posleft="74" data-postop="-7"></span>
+<span data-posleft="74" data-postop="-1"></span>
+<span data-posleft="74" data-postop="8"></span>
+<span data-posleft="74" data-postop="11"></span>
+<span data-posleft="74" data-postop="23"></span>
+<span data-posleft="74" data-postop="29"></span>
+<span data-posleft="74" data-postop="44"></span>
+<span data-posleft="74" data-postop="56"></span>
+<span data-posleft="74" data-postop="65"></span> 
+                
+<span data-posleft="77" data-postop="-49"></span>
+<span data-posleft="77" data-postop="-40"></span>
+<span data-posleft="77" data-postop="-4"></span>
+<span data-posleft="77" data-postop="5"></span>
+<span data-posleft="77" data-postop="11"></span>
+<span data-posleft="77" data-postop="14"></span>
+<span data-posleft="77" data-postop="29"></span>
+<span data-posleft="77" data-postop="41"></span>
+<span data-posleft="77" data-postop="50"></span>
+<span data-posleft="77" data-postop="53"></span>
+<span data-posleft="77" data-postop="62"></span>
+               
+<span data-posleft="80" data-postop="-49"></span>
+<span data-posleft="80" data-postop="-28"></span>
+<span data-posleft="80" data-postop="-25"></span>
+<span data-posleft="80" data-postop="-10"></span>
+<span data-posleft="80" data-postop="-4"></span>
+<span data-posleft="80" data-postop="5"></span>
+<span data-posleft="80" data-postop="17"></span>
+<span data-posleft="80" data-postop="38"></span>
+<span data-posleft="80" data-postop="53"></span>
+               
+<span data-posleft="83" data-postop="-55"></span>
+<span data-posleft="83" data-postop="-52"></span>
+<span data-posleft="83" data-postop="-37"></span>
+<span data-posleft="83" data-postop="-34"></span>
+<span data-posleft="83" data-postop="-13"></span>
+<span data-posleft="83" data-postop="-4"></span>
+<span data-posleft="83" data-postop="-1"></span>
+<span data-posleft="83" data-postop="11"></span>
+<span data-posleft="83" data-postop="14"></span>
+<span data-posleft="83" data-postop="17"></span>
+<span data-posleft="83" data-postop="38"></span>
+<span data-posleft="83" data-postop="41"></span>
+             
+<span data-posleft="86" data-postop="-43"></span>
+<span data-posleft="86" data-postop="-37"></span>
+<span data-posleft="86" data-postop="-10"></span>
+<span data-posleft="86" data-postop="-7"></span>
+<span data-posleft="86" data-postop="-4"></span>
+<span data-posleft="86" data-postop="-1"></span>
+<span data-posleft="86" data-postop="50"></span>
+              
+<span data-posleft="89" data-postop="-37"></span>
+<span data-posleft="89" data-postop="-31"></span>
+<span data-posleft="89" data-postop="-16"></span>
+<span data-posleft="89" data-postop="2"></span>
+<span data-posleft="89" data-postop="5"></span>
+<span data-posleft="89" data-postop="8"></span>
+<span data-posleft="89" data-postop="20"></span>
+<span data-posleft="89" data-postop="29"></span>
+<span data-posleft="89" data-postop="41"></span>
+       
+<span data-posleft="92" data-postop="-34"></span>
+<span data-posleft="92" data-postop="-13"></span>
+<span data-posleft="92" data-postop="-4"></span>
+<span data-posleft="92" data-postop="2"></span>
+<span data-posleft="92" data-postop="17"></span>     
+<span data-posleft="92" data-postop="29"></span>
+
+<span data-posleft="95" data-postop="-28"></span>
+<span data-posleft="95" data-postop="-25"></span>
+<span data-posleft="95" data-postop="-7"></span>
+<span data-posleft="95" data-postop="5"></span>
+<span data-posleft="95" data-postop="20"></span>
+<span data-posleft="95" data-postop="23"></span>
+
+<span data-posleft="98" data-postop="-19"></span>
+<span data-posleft="98" data-postop="-7"></span>
+<span data-posleft="98" data-postop="-4"></span>
+<span data-posleft="98" data-postop="-1"></span>
+<span data-posleft="98" data-postop="11"></span>
+<span data-posleft="98" data-postop="14"></span>
+            </div>
+            
+            <div class="code"></div>
+            
+        </main>
+    </body>
+</html>

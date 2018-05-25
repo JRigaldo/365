@@ -2,7 +2,8 @@
   "routes":{
     "home":{
         "title": "welcome",
-        "footer": "display"
+        "footer": "display",
+        "apiURL": "api/users/user/21"
       },
     "welcome":{
         "title": "welcome",
@@ -15,6 +16,11 @@
     "explore":{
         "title": "Mon explore",
         "footer": "footermenu"
+      },
+    "statistics":{
+        "title": "Mon explore",
+        "footer": "footermenu",
+        "apiURL": "api/users/stats/21/days/2018-03-23"
       }
   }
 }

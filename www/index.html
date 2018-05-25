@@ -41,16 +41,41 @@
 
   var datas = {};
   var currentRoute;
+  var url = 'http://localhost/365/API/';
 
       function dataRoute(){
         return $.getJSON('public/config.json', function( jsonStr ){
           datas = jsonStr.routes[currentRoute];
+
+          apiDatas();
         })
+      }
+
+      function setInterface(){
+        loadContent( 'views/pages/' + currentRoute + '.ejs', 'section');
+        loadContent( 'views/partials/header.ejs', 'header');
+        loadContent( 'views/partials/footer.ejs', 'footer');
+      }
+
+      function apiDatas(){
+        if( datas.hasOwnProperty('apiURL') )
+        {
+          $.getJSON(  url + datas.apiURL, function( data ){
+              datas.apiDatas = data;
+          })
+          .done(function() {
+            setInterface();
+          });
+        }
+        else {
+          setInterface();
+        }
       }
 
       function loadContent( getUrl, htmlSection ){
         var results = $.get( getUrl, function(view) {
           html = ejs.render(view, datas);
+          console.log(datas);
           $( htmlSection ).html(html);
         });
         results.done(function(){
@@ -61,17 +86,11 @@
       $(window).on('hashchange', function(){
         currentRoute = location.hash.slice(1);
         dataRoute();
-        loadContent( 'views/pages/' + currentRoute + '.ejs', 'section');
-        loadContent( 'views/partials/header.ejs', 'header');
-        loadContent( 'views/partials/footer.ejs', 'footer');
       });
 
       $(window).on('load', function(){
         currentRoute = 'home';
         dataRoute();
-        loadContent( 'views/pages/' + currentRoute + '.ejs', 'section');
-        loadContent( 'views/partials/header.ejs', 'header');
-        loadContent( 'views/partials/footer.ejs', 'footer');
       });
       //$('header').load('views/partials/header.ejs')
       //$('footer').load('views/partials/footer.ejs')
